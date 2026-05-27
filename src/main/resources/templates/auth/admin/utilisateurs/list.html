@@ -1,10 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Gestion des utilisateurs</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></head>
+<body class="bg-gray-100">
+<div class="container mx-auto p-6">
+    <div class="flex justify-between items-center mb-6"><h1 class="text-2xl font-bold text-univ-navy">Utilisateurs</h1><a th:href="@{/admin/utilisateurs/create}" class="bg-green-600 text-white px-4 py-2 rounded"><i class="fas fa-plus"></i> Nouveau</a></div>
+    <div class="bg-white rounded shadow overflow-hidden">
+        <table class="min-w-full">
+            <thead class="bg-gray-800 text-white"><tr><th class="p-3">Login</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Actif</th><th>Actions</th></tr></thead>
+            <tbody>
+            <tr th:each="u : ${utilisateurs.content}">
+                <td class="p-3" th:text="${u.login}">login</td>
+                <td th:text="${u.nom}">nom</td>
+                <td th:text="${u.prenom}">prenom</td>
+                <td th:text="${u.email}">email</td>
+                <td><span th:if="${u.actif}" class="text-green-600">✓</span><span th:unless="${u.actif}" class="text-red-600">✗</span></td>
+                <td><a th:href="@{/admin/utilisateurs/{id}(id=${u.id})}" class="text-blue-600"><i class="fas fa-eye"></i></a> | <a th:href="@{/admin/utilisateurs/edit/{id}(id=${u.id})}" class="text-yellow-600"><i class="fas fa-edit"></i></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${utilisateurs.totalPages > 1}" class="mt-4 flex justify-center gap-2">
+        <span th:each="i : ${#numbers.sequence(0, utilisateurs.totalPages-1)}">
+            <a th:href="@{/admin/utilisateurs(page=${i})}" th:text="${i+1}" class="px-3 py-1 border rounded"></a>
+        </span>
+    </div>
+</div>
 </body>
 </html>

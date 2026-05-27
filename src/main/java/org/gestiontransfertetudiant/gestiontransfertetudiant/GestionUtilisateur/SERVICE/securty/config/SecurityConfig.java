@@ -52,23 +52,13 @@ public class SecurityConfig {
                 // On le désactive partiellement pour les endpoints API si besoin, mais ici on garde pour les formulaires
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**")) // désactiver CSRF pour les appels API
                 .authorizeHttpRequests(auth -> auth
-                        // Ressources publiques
-                        .antMatchers("/auth/login", "/auth/register", "/auth/forgot-password",
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/forgot-password",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        // Administration centrale
-                        .antMatchers("/admin/**").hasRole("ADMIN")
-                        // Agents académiques
-                        .antMatchers("/agent/**").hasAnyRole("AGENT", "ADMIN")
-                        // Commission pédagogique
-                        .antMatchers("/commission/**").hasAnyRole("COMMISSION", "ADMIN")
-                        // Universités (origine et accueil)
-                        .antMatchers("/university/**").hasAnyRole("UNIV_A", "UNIV_B", "ADMIN")
-                        // Étudiants
-                        .antMatchers("/student/**", "/profile/**", "/sessions/**").authenticated()
-                        // Dashboard accessible à tout utilisateur authentifié
-                        .antMatchers("/dashboard/**").authenticated()
-                        // Par défaut, tout autre endpoint nécessite authentification
                         .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")

@@ -18,4 +18,9 @@ public class JournalService {
         return journalConnexionRepository.findByUtilisateurId(utilisateurId, pageable)
                 .map(JournalConnexionMapper::toDTO);
     }
+    // Dans JournalService.java
+    public Page<JournalConnexionResponseDTO> getAllJournaux(Pageable pageable) {
+        return journalConnexionRepository.findAll(pageable)
+                .map(JournalConnexionMapper::toDTO);
+    }
 }

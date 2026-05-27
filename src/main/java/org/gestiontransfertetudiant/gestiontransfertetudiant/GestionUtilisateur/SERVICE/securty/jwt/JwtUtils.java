@@ -1,4 +1,4 @@
-package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.jwt;
+package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.securty.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

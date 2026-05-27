@@ -1,10 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Université de l'Excellence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        univ: {
+                            navy: '#133054',
+                            gold: '#bfa15f',
+                            navyLight: '#1d4270',
+                            goldLight: '#d2b67a',
+                            bg: '#f8fafc'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bg-campus-blur {
+            background-image: linear-gradient(rgba(19, 48, 84, 0.4), rgba(15, 23, 42, 0.45)),
+            url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1470&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 </head>
-<body>
-$END$
+<body class="bg-campus-blur min-h-screen flex items-center justify-center p-4">
+<div class="w-full max-w-md bg-white rounded-[24px] shadow-2xl overflow-hidden">
+    <div class="p-6 pb-4 border-b border-slate-100 flex flex-col items-center bg-white">
+        <div class="flex items-center space-x-3">
+            <svg class="w-12 h-12 text-univ-navy" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>
+                <path d="M25 65 C20 50,25 35,35 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                <path d="M75 65 C80 50,75 35,65 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                <path d="M35 60 L50 65 L65 60 L65 45 L50 50 L35 45 Z" fill="currentColor" opacity="0.8"/>
+                <path d="M48 75 L52 75 L53 52 L47 52 Z" fill="#bfa15f"/>
+                <path d="M45 48 C48 40,52 40,55 48 C51 44,49 44,45 48 Z" fill="url(#torch-flame)"/>
+                <defs>
+                    <linearGradient id="torch-flame" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#bfa15f"/>
+                        <stop offset="100%" stop-color="#ffedd5"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="leading-tight text-left">
+                <span class="block font-bold text-xs tracking-widest uppercase text-univ-navy">Université de</span>
+                <span class="block serif-title text-xl font-bold tracking-wide text-univ-gold">l'Excellence</span>
+                <span class="block text-[8px] tracking-widest text-slate-400 font-semibold font-mono uppercase">Fundata MCMXCVIII</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-8 space-y-6">
+        <div class="text-center">
+            <h2 class="text-xl font-bold text-univ-navy">Créer un compte</h2>
+            <p class="text-xs text-slate-500">Remplissez le formulaire ci-dessous</p>
+        </div>
+
+        <!-- Affichage des erreurs globales (déplacé à l'intérieur du formulaire) -->
+        <div th:if="${param.error}" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm" th:text="${param.error}"></div>
+
+        <form th:action="@{/auth/register}" th:object="${registration}" method="post" class="space-y-4">
+            <!-- Bloc d'erreurs globales (maintenant à l'intérieur du formulaire avec th:object) -->
+            <div th:if="${#fields.hasErrors('*')}" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm">
+                <ul>
+                    <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                </ul>
+            </div>
+
+            <!-- Login -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Login *</label>
+                <div class="relative mt-1">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-regular fa-user text-sm"></i></span>
+                    <input type="text" th:field="*{utilisateurRequest.login}" required
+                           class="w-full pl-10 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-univ-gold focus:outline-none bg-slate-50/50">
+                </div>
+                <p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('utilisateurRequest.login')}" th:errors="*{utilisateurRequest.login}"></p>
+            </div>
+
+            <!-- Mot de passe -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Mot de passe *</label>
+                <div class="relative mt-1">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-lock text-sm"></i></span>
+                    <input type="password" th:field="*{utilisateurRequest.motDePasse}" required
+                           class="w-full pl-10 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-univ-gold focus:outline-none bg-slate-50/50">
+                </div>
+                <p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('utilisateurRequest.motDePasse')}" th:errors="*{utilisateurRequest.motDePasse}"></p>
+            </div>
+
+            <!-- Nom -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Nom *</label>
+                <input type="text" th:field="*{profilRequest.nom}" required
+                       class="mt-1 w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-univ-gold focus:outline-none bg-slate-50/50">
+                <p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('profilRequest.nom')}" th:errors="*{profilRequest.nom}"></p>
+            </div>
+
+            <!-- Prénom -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Prénom *</label>
+                <input type="text" th:field="*{profilRequest.prenom}" required
+                       class="mt-1 w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-univ-gold focus:outline-none bg-slate-50/50">
+                <p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('profilRequest.prenom')}" th:errors="*{profilRequest.prenom}"></p>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Email *</label>
+                <input type="email" th:field="*{profilRequest.email}" required
+                       class="mt-1 w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-univ-gold focus:outline-none bg-slate-50/50">
+                <p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('profilRequest.email')}" th:errors="*{profilRequest.email}"></p>
+            </div>
+
+            <!-- Téléphone (optionnel) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Téléphone</label>
+                <input type="tel" th:field="*{profilRequest.telephone}"
+                       class="mt-1 w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-univ-gold focus:outline-none bg-slate-50/50">
+            </div>
+
+            <!-- Matricule national (optionnel) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Matricule national</label>
+                <input type="text" th:field="*{profilRequest.matriculeNational}"
+                       class="mt-1 w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-univ-gold focus:outline-none bg-slate-50/50">
+            </div>
+
+            <!-- Case à cocher de consentement -->
+            <label class="flex items-start space-x-2 text-[11px] text-slate-500 cursor-pointer select-none leading-tight pt-1">
+                <input type="checkbox" required class="w-4 h-4 rounded border-slate-300 text-univ-gold focus:ring-0 accent-univ-gold mt-0.5">
+                <span>J'accepte le règlement de confidentialité et la charte d'utilisation informatique.</span>
+            </label>
+
+            <button type="submit"
+                    class="mt-2 w-full py-3.5 bg-univ-gold hover:bg-univ-goldLight text-univ-navy font-extrabold text-xs tracking-wider uppercase rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-user-plus text-sm"></i>
+                <span>Créer mon accès</span>
+            </button>
+        </form>
+
+        <div class="pt-4 border-t border-slate-100 text-center text-xs">
+            <span class="text-slate-500">Vous possédez déjà un compte ?</span>
+            <a th:href="@{/auth/login}" class="text-univ-navy hover:text-univ-navyLight font-bold underline ml-1">Se connecter</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>
