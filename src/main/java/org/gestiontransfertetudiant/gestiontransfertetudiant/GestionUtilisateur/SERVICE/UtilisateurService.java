@@ -9,6 +9,7 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.request.UtilisateurUpdateRequestDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.response.*;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Profil;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Role;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Utilisateur;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.repository.ProfilRepository;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.repository.RoleRepository;
@@ -52,35 +53,50 @@ public class UtilisateurService {
         profil.setEmail(profilRequest.getEmail());
         profil.setTelephone(profilRequest.getTelephone());
         profil.setMatriculeNational(profilRequest.getMatriculeNational());
-        profil.setFonction(profilRequest.getFonction());
+
         profilRepository.save(profil);
     }
 
     @Transactional
-    public UtilisateurResponseDTO createUser(UtilisateurRequestDTO request, ProfilRequestDTO profilRequest) {
+    public UtilisateurResponseDTO createUser(UtilisateurRequestDTO request) {
         if (utilisateurRepository.existsByLogin(request.getLogin())) {
             throw new AlreadyExistsException("Login déjà utilisé");
         }
-        if (profilRepository.findByEmail(profilRequest.getEmail()).isPresent()) {
+        if (profilRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new AlreadyExistsException("Email déjà utilisé");
         }
-        if (profilRequest.getMatriculeNational() != null &&
-                profilRepository.findByMatriculeNational(profilRequest.getMatriculeNational()).isPresent()) {
-            throw new AlreadyExistsException("Matricule national déjà utilisé");
-        }
 
-        Utilisateur utilisateur = UtilisateurMapper.toEntity(request);
+        // Création de l'utilisateur
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setLogin(request.getLogin());
         utilisateur.setMotDePasseHash(passwordEncoder.encode(request.getMotDePasse()));
+        utilisateur.setActif(request.getActif() != null ? request.getActif() : true);
         utilisateur = utilisateurRepository.save(utilisateur);
 
-        Profil profil = ProfilMapper.toEntity(profilRequest, utilisateur);
+        // Création du profil
+        Profil profil = new Profil();
+        profil.setNom(request.getNom());
+        profil.setPrenom(request.getPrenom());
+        profil.setEmail(request.getEmail());
+        profil.setTelephone(request.getTelephone());
+        profil.setMatriculeNational(request.getMatriculeNational());
+        profil.setUtilisateur(utilisateur);
+        profilRepository.save(profil);
         utilisateur.setProfil(profil);
-        utilisateur = utilisateurRepository.save(utilisateur);
+        utilisateur = utilisateurRepository.save(utilisateur); // mise à jour
 
+        // Assignation des rôles
         if (request.getRoleIds() != null && !request.getRoleIds().isEmpty()) {
-            Utilisateur finalUtilisateur = utilisateur;
-            request.getRoleIds().forEach(roleId -> utilisateurRoleService.assignRoleToUser(finalUtilisateur.getId(), roleId));
+            for (UUID roleId : request.getRoleIds()) {
+                utilisateurRoleService.assignRoleToUser(utilisateur.getId(), roleId);
+            }
+        } else {
+            // Rôle par défaut (ÉTUDIANT)
+            Role etudiantRole = roleRepository.findByNom("ETUDIANT")
+                    .orElseThrow(() -> new ResourceNotFoundException("Rôle ETUDIANT non trouvé"));
+            utilisateurRoleService.assignRoleToUser(utilisateur.getId(), etudiantRole.getId());
         }
+
         return UtilisateurMapper.toDTO(utilisateur);
     }
 
@@ -124,4 +140,5 @@ public class UtilisateurService {
                 .map(ur -> RoleMapper.toDTO(ur.getRole()))
                 .collect(Collectors.toList());
     }
+
 }

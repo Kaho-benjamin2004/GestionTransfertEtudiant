@@ -2,6 +2,7 @@ package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur
 
 import lombok.Builder;
 import lombok.Data;
+
 import java.util.UUID;
 
 @Data
@@ -11,4 +12,6 @@ public class UtilisateurSimpleResponseDTO {
     private String login;
     private String nom;
     private String prenom;
+    private String email;   // à ajouter
+    private Boolean actif;  // à ajouter
 }

@@ -11,21 +11,18 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // permet @PreAuthorize sur les méthodes des contrôleurs
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter; // optionnel pour API
+    // private final JwtAuthenticationFilter jwtAuthenticationFilter; // Inutile pour les vues MVC, à commenter si pas d'API
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,17 +45,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF : désactivé si on utilise JWT pour API, mais pour formulaire MVC on peut le laisser activé
-                // On le désactive partiellement pour les endpoints API si besoin, mais ici on garde pour les formulaires
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**")) // désactiver CSRF pour les appels API
+                // Désactiver CSRF pour éviter les erreurs (développement) – à réactiver en production si besoin
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Ressources publiques
                         .requestMatchers("/auth/login", "/auth/register", "/auth/forgot-password",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        // Administration centrale
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // Agents académiques
+                        .requestMatchers("/agent/**").hasAnyRole("AGENT", "ADMIN")
+                        // Commission pédagogique
+                        .requestMatchers("/commission/**").hasAnyRole("COMMISSION", "ADMIN")
+                        // Universités (origine et accueil)
+                        .requestMatchers("/university/**").hasAnyRole("UNIV_A", "UNIV_B", "ADMIN")
+                        // Étudiants
+                        .requestMatchers("/student/**", "/profile/**", "/sessions/**").authenticated()
+                        // Dashboard accessible à tout utilisateur authentifié
+                        .requestMatchers("/dashboard/**").authenticated()
+                        // Toute autre requête nécessite authentification
                         .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/auth/login")
-                        .permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
@@ -76,16 +82,16 @@ public class SecurityConfig {
                 )
                 .rememberMe(remember -> remember
                         .key("uniqueAndSecretKeyForRememberMe")
-                        .tokenValiditySeconds(86400) // 1 jour
+                        .tokenValiditySeconds(86400)
                 )
                 .sessionManagement(session -> session
-                        .maximumSessions(1) // une seule session par utilisateur
+                        .maximumSessions(1)
                         .expiredUrl("/auth/login?expired=true")
                 );
 
-        // Optionnel : ajouter le filtre JWT avant le filtre d'authentification par formulaire
-        // pour permettre des appels API avec token. Si vous n'utilisez pas d'API REST, commentez la ligne.
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // Si vous utilisez JWT pour des API REST, vous pouvez ajouter le filtre mais il faudrait le configurer
+        // pour ignorer les requêtes vers les endpoints MVC. Pour l'instant, nous le commentons.
+        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

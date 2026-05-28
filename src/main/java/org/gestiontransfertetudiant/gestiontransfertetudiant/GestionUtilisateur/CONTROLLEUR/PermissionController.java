@@ -21,6 +21,8 @@ public class PermissionController {
 
     private final PermissionService permissionService;
 
+
+
     @GetMapping
     public String listPermissions(Model model) {
         List<PermissionResponseDTO> permissions = permissionService.getAllPermissions();
@@ -59,7 +61,6 @@ public class PermissionController {
         model.addAttribute("permission", permission);
         return "admin/permissions/view";
     }
-
     @PostMapping("/delete/{id}")
     public String deletePermission(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
         try {

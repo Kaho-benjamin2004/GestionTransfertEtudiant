@@ -49,6 +49,8 @@ public class UtilisateurMapper {
                 .login(utilisateur.getLogin())
                 .nom(utilisateur.getProfil() != null ? utilisateur.getProfil().getNom() : null)
                 .prenom(utilisateur.getProfil() != null ? utilisateur.getProfil().getPrenom() : null)
+                .email(utilisateur.getProfil() != null ? utilisateur.getProfil().getEmail() : null)
+                .actif(utilisateur.getActif())
                 .build();
     }
 
@@ -58,12 +60,14 @@ public class UtilisateurMapper {
                 .id(utilisateur.getId())
                 .login(utilisateur.getLogin())
                 .actif(utilisateur.getActif())
+                .dateCreation(utilisateur.getDateCreation())
+                .derniereConnexion(utilisateur.getDerniereConnexion())
                 .profil(ProfilMapper.toDTO(utilisateur.getProfil()))
                 .roles(utilisateur.getUtilisateurRoles() != null ?
                         utilisateur.getUtilisateurRoles().stream()
                         .map(ur -> RoleMapper.toDTO(ur.getRole()))
                         .collect(Collectors.toList()) : null)
-                .permissions(null) // Les permissions sont déduites des rôles, à calculer si besoin
+                .permissions(null) // ou calculer via les rôles si besoin
                 .build();
     }
 }

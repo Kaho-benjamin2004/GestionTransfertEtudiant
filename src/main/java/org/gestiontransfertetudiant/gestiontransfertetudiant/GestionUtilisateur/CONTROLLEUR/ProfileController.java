@@ -42,7 +42,7 @@ public class ProfileController {
             request.setEmail(user.getProfil().getEmail());
             request.setTelephone(user.getProfil().getTelephone());
             request.setMatriculeNational(user.getProfil().getMatriculeNational());
-            request.setFonction(user.getProfil().getFonction());
+//            request.setFonction(user.getProfil().getFonction());
             model.addAttribute("profilRequest", request);
         }
         return "profile/edit";

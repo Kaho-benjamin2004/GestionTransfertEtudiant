@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un rôle - Université de l'Excellence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap" rel="stylesheet">
+    <script>tailwind.config = { theme: { extend: { colors: { univ: { navy: '#133054', gold: '#bfa15f' } } } } }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bg-campus-blur { background-image: linear-gradient(rgba(19,48,84,0.4), rgba(15,23,42,0.45)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1470&auto=format&fit=crop'); background-size: cover; background-attachment: fixed; }
+        .content-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(2px); border-radius: 1.5rem; }
+    </style>
+</head>
+<body class="bg-campus-blur min-h-screen flex">
+<!-- Sidebar (identique à list.html) -->
+<aside class="w-72 bg-univ-navy text-white flex flex-col justify-between shadow-2xl z-30 flex-shrink-0 border-r border-univ-gold/20">
+    <div><div class="p-6 border-b border-white/10 flex flex-col items-center"><div class="flex items-center space-x-3"><svg class="w-10 h-10 text-univ-gold" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/><path d="M25 65 C20 50,25 35,35 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M75 65 C80 50,75 35,65 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M35 60 L50 65 L65 60 L65 45 L50 50 L35 45 Z" fill="currentColor" opacity="0.8"/><path d="M48 75 L52 75 L53 52 L47 52 Z" fill="#fff"/><path d="M45 48 C48 40,52 40,55 48 C51 44,49 44,45 48 Z" fill="url(#torch-flame)"/><defs><linearGradient id="torch-flame" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#bfa15f"/><stop offset="100%" stop-color="#fff"/></linearGradient></defs></svg><div class="leading-tight"><span class="block font-bold text-xs tracking-wider uppercase">Université de</span><span class="block font-serif text-lg font-light tracking-wide text-univ-gold">l'Excellence</span></div></div><div class="mt-2 text-[9px] text-univ-gold/60 uppercase tracking-widest font-semibold">Administration</div></div>
+        <nav class="mt-6 px-4 space-y-1">
+            <a th:href="@{/dashboard}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition"><i class="fa-solid fa-chart-pie w-5"></i><span>Dashboard</span></a>
+            <a th:href="@{/admin/utilisateurs}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition"><i class="fa-solid fa-users w-5"></i><span>Utilisateurs</span></a>
+            <a th:href="@{/admin/roles}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-tags w-5"></i><span>Rôles</span></a>
+            <a th:href="@{/admin/permissions}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition"><i class="fa-solid fa-key w-5"></i><span>Permissions</span></a>
+            <a th:href="@{/admin/journaux}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition"><i class="fa-solid fa-history w-5"></i><span>Journaux</span></a>
+            <a th:href="@{/profile}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
+        </nav>
+    </div>
+    <div class="p-4 border-t border-white/10"><a th:href="@{/auth/logout}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-rose-300 hover:bg-rose-500/10 hover:text-rose-100 transition"><i class="fa-solid fa-power-off w-5"></i><span>Déconnexion</span></a></div>
+</aside>
+
+<div class="flex-grow flex flex-col overflow-hidden">
+    <header class="h-20 bg-white/80 backdrop-blur-sm border-b border-slate-200 flex items-center justify-between px-8"><h1 class="text-2xl font-bold text-univ-navy">Créer un rôle</h1><div><img class="w-10 h-10 rounded-full border-2 border-univ-gold" src="https://ui-avatars.com/api/?background=133054&color=bfa15f&bold=true&name=Admin" alt="Avatar"></div></header>
+    <main class="flex-grow p-8 overflow-y-auto">
+        <div class="content-card p-6 max-w-2xl mx-auto">
+            <h2 class="text-xl font-bold text-univ-navy mb-4">Nouveau rôle</h2>
+            <form th:action="@{/admin/roles/create}" th:object="${roleRequest}" method="post" class="space-y-4">
+                <div th:if="${#fields.hasErrors('*')}" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm"><ul><li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li></ul></div>
+
+                <div><label class="block text-xs font-bold text-slate-600 uppercase">Nom *</label><input type="text" th:field="*{nom}" required class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"><p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></p></div>
+                <div><label class="block text-xs font-bold text-slate-600 uppercase">Description</label><textarea th:field="*{description}" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"></textarea></div>
+                <div><label class="block text-xs font-bold text-slate-600 uppercase">Permissions</label><select th:field="*{permissionIds}" multiple class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"><option th:each="p : ${allPermissions}" th:value="${p.id}" th:text="${p.nom}"></option></select><p class="text-xs text-slate-500">Ctrl+clic pour sélection multiple</p></div>
+
+                <div class="flex justify-end space-x-3 pt-4">
+                    <a th:href="@{/admin/roles}" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl">Annuler</a>
+                    <button type="submit" class="bg-univ-gold text-univ-navy font-bold px-6 py-2 rounded-xl shadow hover:bg-univ-goldLight transition">Créer le rôle</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -29,7 +29,7 @@ public class ProfilMapper {
         profil.setEmail(requestDTO.getEmail());
         profil.setTelephone(requestDTO.getTelephone());
         profil.setMatriculeNational(requestDTO.getMatriculeNational());
-        profil.setFonction(requestDTO.getFonction());
+
         profil.setUtilisateur(utilisateur);
         return profil;
     }

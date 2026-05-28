@@ -27,6 +27,36 @@ public class AuthController {
 
     private final AuthService authService;
     private final UtilisateurService utilisateurService;
+
+    @GetMapping("/change-password")
+    public String showChangePasswordForm(Model model) {
+        if (!model.containsAttribute("changementRequest")) {
+            model.addAttribute("changementRequest", new ChangementMotDePasseRequestDTO());
+        }
+        return "auth/change-password";
+    }
+    @PostMapping("/change-password")
+    public String processChangePassword(@Valid @ModelAttribute("changementRequest") ChangementMotDePasseRequestDTO request,
+                                        BindingResult result,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "auth/change-password";
+        }
+        UUID userId = (UUID) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/auth/login";
+        }
+        try {
+            authService.changePassword(userId, request);
+            session.invalidate();
+            redirectAttributes.addFlashAttribute("success", "Mot de passe changé, veuillez vous reconnecter.");
+            return "redirect:/auth/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/auth/change-password";
+        }
+    }
     
     @GetMapping("/login")
     public String showLoginForm(Model model) {
@@ -53,7 +83,7 @@ public class AuthController {
             return "auth/register";
         }
         try {
-            utilisateurService.createUser(registration.getUtilisateurRequest(), registration.getProfilRequest());
+            utilisateurService.createUser(registration.getUtilisateurRequest());
             redirectAttributes.addFlashAttribute("success", "Inscription réussie. Veuillez vous connecter.");
             return "redirect:/auth/login";
         } catch (Exception e) {

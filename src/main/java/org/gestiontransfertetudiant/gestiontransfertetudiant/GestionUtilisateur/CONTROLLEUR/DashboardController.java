@@ -1,15 +1,18 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.CONTROLLEUR;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.response.UtilisateurDetailResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.UtilisateurService;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.securty.jwt.UserDetailsImpl;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @Controller
@@ -20,23 +23,30 @@ public class DashboardController {
     private final UtilisateurService utilisateurService;
 
     @GetMapping
-    public String dashboard(HttpSession session, Model model) {
-        UUID userId = (UUID) session.getAttribute("userId");
-        if (userId == null) {
+    public String dashboard(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof String) {
             return "redirect:/auth/login";
         }
 
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
         UtilisateurDetailResponseDTO user = utilisateurService.getUserById(userId);
         model.addAttribute("user", user);
-        List<String> roles = (List<String>) session.getAttribute("userRoles");
 
-        if (roles.contains("ROLE_ADMIN") || roles.contains("ADMIN")) {
-            return "auth/dashboard/admin";
-        } else if (roles.contains("ROLE_AGENT") || roles.contains("AGENT")) {
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAgent = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AGENT"));
+        boolean isCommission = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_COMMISSION"));
+        boolean isUniv = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_UNIV_A") || a.getAuthority().equals("ROLE_UNIV_B"));
+
+        if (isAdmin) {
+            return "dashboard/admin";
+        } else if (isAgent) {
             return "dashboard/agent";
-        } else if (roles.contains("ROLE_COMMISSION") || roles.contains("COMMISSION")) {
+        } else if (isCommission) {
             return "dashboard/commission";
-        } else if (roles.contains("ROLE_UNIV_A") || roles.contains("UNIV_A") || roles.contains("ROLE_UNIV_B") || roles.contains("UNIV_B")) {
+        } else if (isUniv) {
             return "dashboard/university";
         } else {
             return "dashboard/student";

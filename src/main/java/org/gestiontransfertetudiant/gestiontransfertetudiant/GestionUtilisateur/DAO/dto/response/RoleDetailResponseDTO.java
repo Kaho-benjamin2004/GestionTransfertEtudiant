@@ -11,5 +11,6 @@ public class RoleDetailResponseDTO {
     private UUID id;
     private String nom;
     private String description;
+    private Integer nbUtilisateurs;   // ajouté
     private List<PermissionResponseDTO> permissions;
 }

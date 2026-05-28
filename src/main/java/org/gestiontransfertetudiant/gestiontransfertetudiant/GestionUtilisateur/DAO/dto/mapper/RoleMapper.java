@@ -32,6 +32,7 @@ public class RoleMapper {
                 .id(role.getId())
                 .nom(role.getNom())
                 .description(role.getDescription())
+                .nbUtilisateurs(role.getUtilisateurRoles() != null ? role.getUtilisateurRoles().size() : 0)
                 .permissions(role.getRolePermissions() != null ?
                         role.getRolePermissions().stream()
                         .map(rp -> PermissionMapper.toDTO(rp.getPermission()))
