@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body class="bg-campus-blur min-h-screen">
+<div class="flex h-screen overflow-hidden">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <div class="flex-grow flex flex-col overflow-hidden">
+        <div th:replace="fragments/header :: header"></div>
+        <main class="flex-grow p-8 overflow-y-auto custom-scrollbar">
+            <div class="content-card p-6">
+                <h2 class="text-xl font-bold text-univ-navy mb-4">Historique académique</h2>
+                <div th:each="parcours : ${etudiant.parcoursAcademiques}" class="mb-6">
+                    <h3 class="font-bold">Année universitaire : <span th:text="${parcours.anneeUniversitaire}"></span></h3>
+                    <p>Moyenne : <span th:text="${parcours.moyenne}"></span> | Statut : <span th:text="${parcours.statut}"></span></p>
+                    <table class="min-w-full border">
+                        <thead class="bg-univ-navy text-white"><tr><th>UE</th><th>Note</th><th>Crédits</th></tr></thead>
+                        <tbody>
+                        <tr th:each="note : ${parcours.notes}">
+                            <td th:text="${note.uniteEnseignement.intitule}"></td>
+                            <td th:text="${note.valeur}"></td>
+                            <td th:text="${note.uniteEnseignement.credits}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

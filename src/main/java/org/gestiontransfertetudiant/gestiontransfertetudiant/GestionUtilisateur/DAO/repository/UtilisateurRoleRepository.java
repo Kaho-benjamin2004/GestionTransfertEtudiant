@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface UtilisateurRoleRepository extends JpaRepository<UtilisateurRole, UtilisateurRoleId> {
     List<UtilisateurRole> findByUtilisateurId(UUID utilisateurId);
+   
 
     @Query("SELECT ur.role.nom FROM UtilisateurRole ur WHERE ur.utilisateur.id = :utilisateurId")
     List<String> findRoleNomsByUtilisateurId(@Param("utilisateurId") UUID utilisateurId);

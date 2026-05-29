@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Relevé de notes - Université de l'Excellence</title>
+    <style>
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            margin: 40px;
+        }
+        h1, h2 {
+            color: #133054;
+            text-align: center;
+        }
+        .header {
+            border-bottom: 2px solid #bfa15f;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .info {
+            margin-bottom: 30px;
+        }
+        .info table {
+            width: 100%;
+        }
+        .info td {
+            padding: 5px;
+        }
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .notes-table th, .notes-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .notes-table th {
+            background-color: #133054;
+            color: white;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 30px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+        }
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Université de l'Excellence</h1>
+    <h2>Relevé de notes</h2>
+    <p>Généré le : <span th:text="${dateGeneration}">Date</span></p>
+</div>
+
+<div class="info">
+    <table>
+        <tr>
+            <td><strong>Nom :</strong></td>
+            <td th:text="${etudiant.nom + ' ' + etudiant.prenom}">Nom</td>
+            <td><strong>N° Étudiant :</strong></td>
+            <td th:text="${etudiant.numeroEtudiant}">Numéro</td>
+        </tr>
+        <tr>
+            <td><strong>Niveau :</strong></td>
+            <td th:text="${etudiant.niveau}">Niveau</td>
+            <td><strong>Parcours :</strong></td>
+            <td th:text="${etudiant.parcoursActuel}">Parcours</td>
+        </tr>
+        <tr>
+            <td><strong>Année universitaire :</strong></td>
+            <td th:text="${parcours.anneeUniversitaire}">Année</td>
+            <td><strong>Statut :</strong></td>
+            <td th:text="${parcours.statut}">Statut</td>
+        </tr>
+    </table>
+</div>
+
+<table class="notes-table">
+    <thead>
+    <tr>
+        <th>Code</th>
+        <th>Unité d'Enseignement</th>
+        <th>Crédits ECTS</th>
+        <th>Coefficient</th>
+        <th>Note (/20)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="note : ${parcours.notes}">
+        <td th:text="${note.uniteEnseignement.code}">CODE</td>
+        <td th:text="${note.uniteEnseignement.intitule}">Intitulé</td>
+        <td class="numeric" th:text="${note.uniteEnseignement.credits}">0</td>
+        <td class="numeric" th:text="${note.uniteEnseignement.coefficient}">0</td>
+        <td class="numeric" th:text="${note.valeur}">0.00</td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="signature">
+    <p>Le responsable pédagogique, <br/> ______________________</p>
+</div>
+
+<div class="footer">
+    <p>Ce document est une preuve officielle. Son authenticité peut être vérifiée sur le portail de l'Université de l'Excellence.</p>
+</div>
+</body>
+</html>

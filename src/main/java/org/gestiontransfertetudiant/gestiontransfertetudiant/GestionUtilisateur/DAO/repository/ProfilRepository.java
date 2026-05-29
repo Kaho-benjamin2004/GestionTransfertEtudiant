@@ -7,5 +7,7 @@ import java.util.UUID;
 
 public interface ProfilRepository extends JpaRepository<Profil, UUID> {
     Optional<Profil> findByEmail(String email);
+    Optional<Profil> findByUtilisateurId(UUID utilisateurId);
+    
     Optional<Profil> findByMatriculeNational(String matriculeNational);
 }

@@ -1,0 +1,14 @@
+<header th:fragment="header" class="h-20 bg-white/80 backdrop-blur-sm border-b border-slate-200 flex items-center justify-between px-8 z-20 shadow-sm">
+    <div class="flex items-center space-x-2">
+        <h1 id="page-title" class="text-2xl font-bold text-univ-navy" th:text="${pageTitle}">Titre</h1>
+        <span class="text-slate-400">/</span>
+        <span id="breadcrumb" class="text-slate-500 font-medium text-sm" th:text="${breadcrumb}">Sous-titre</span>
+    </div>
+    <div class="flex items-center space-x-3">
+        <div class="text-right hidden sm:block">
+            <span class="block text-sm font-bold text-univ-navy" th:text="${user != null and user.profil != null ? user.profil.nom + ' ' + user.profil.prenom : user.login}">Utilisateur</span>
+            <span class="block text-[11px] text-slate-500 font-medium" th:text="${roleDescription}">Rôle</span>
+        </div>
+        <img class="w-10 h-10 rounded-full border-2 border-univ-gold object-cover shadow-sm" src="https://ui-avatars.com/api/?background=133054&color=bfa15f&bold=true&name=User" alt="Avatar">
+    </div>
+</header>

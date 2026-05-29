@@ -1,5 +1,6 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.repository;
 
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Role;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,6 +14,10 @@ import java.util.UUID;
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> {
     Optional<Utilisateur> findByLogin(String login);
     boolean existsByLogin(String login);
+    // Dans RoleRepository
+   
+
+
 
     @Modifying
     @Transactional

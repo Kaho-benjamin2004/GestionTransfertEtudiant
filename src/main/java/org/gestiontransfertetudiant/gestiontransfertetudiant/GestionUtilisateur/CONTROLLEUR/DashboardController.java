@@ -24,17 +24,16 @@ public class DashboardController {
 
     @GetMapping
     public String dashboard(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() instanceof String) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal() instanceof String) {
             return "redirect:/auth/login";
         }
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         UUID userId = userDetails.getId();
         UtilisateurDetailResponseDTO user = utilisateurService.getUserById(userId);
         model.addAttribute("user", user);
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         boolean isAgent = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AGENT"));
         boolean isCommission = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_COMMISSION"));
