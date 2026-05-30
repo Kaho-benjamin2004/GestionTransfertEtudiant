@@ -19,9 +19,9 @@ public class NoteRequestDTO {
     @DecimalMax(value = "20.0", inclusive = true)
     private BigDecimal valeur;
 
-    private String session; // Normale, Rattrapage
+    private String session; // "Normale", "Rattrapage"
 
-    @PastOrPresent(message = "La date d'obtention ne peut être future")
+    @PastOrPresent(message = "La date ne peut être future")
     private LocalDate dateObtention;
 
     @NotNull(message = "L'ID du parcours académique est obligatoire")

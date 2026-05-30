@@ -1,10 +1,12 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.mapper;
 
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.ParcoursAcademiqueResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request.ParcoursAcademiqueRequestDTO;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.response.ParcoursAcademiqueResponseDTO;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.Etudiant;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.ParcoursAcademique;
 
 import java.util.stream.Collectors;
+
 
 public class ParcoursAcademiqueMapper {
 
@@ -26,11 +28,12 @@ public class ParcoursAcademiqueMapper {
                 .build();
     }
 
-    public static ParcoursAcademique toEntity(ParcoursAcademiqueRequestDTO requestDTO) {
+    public static ParcoursAcademique toEntity(ParcoursAcademiqueRequestDTO requestDTO, Etudiant etudiant) {
         if (requestDTO == null) return null;
         ParcoursAcademique parcours = new ParcoursAcademique();
         parcours.setAnneeUniversitaire(requestDTO.getAnneeUniversitaire());
-        parcours.setStatut(requestDTO.getStatut());
+        parcours.setStatut(requestDTO.getStatut() != null ? requestDTO.getStatut() : "En cours");
+        parcours.setEtudiant(etudiant);
         return parcours;
     }
 }

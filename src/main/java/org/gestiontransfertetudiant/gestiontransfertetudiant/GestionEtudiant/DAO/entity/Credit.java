@@ -7,24 +7,15 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "credit")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class Credit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
-    @Column(nullable = false)
     private Integer nombre;
-
     private String annee;
-
-    private String statut; // "Acquis", "Non acquis"
-
+    private String statut;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parcours_academique_id", nullable = false)
     private ParcoursAcademique parcoursAcademique;

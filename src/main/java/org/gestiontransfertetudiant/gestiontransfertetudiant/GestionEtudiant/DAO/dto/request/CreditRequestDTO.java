@@ -15,7 +15,7 @@ public class CreditRequestDTO {
     private Integer nombre;
 
     private String annee;
-    private String statut;
+    private String statut; // "Acquis", "Non acquis", "En cours"
 
     @NotNull(message = "L'ID du parcours académique est obligatoire")
     private UUID parcoursAcademiqueId;

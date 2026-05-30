@@ -1,7 +1,7 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.mapper;
 
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.CreditResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request.CreditRequestDTO;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.response.CreditResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.Credit;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.ParcoursAcademique;
 

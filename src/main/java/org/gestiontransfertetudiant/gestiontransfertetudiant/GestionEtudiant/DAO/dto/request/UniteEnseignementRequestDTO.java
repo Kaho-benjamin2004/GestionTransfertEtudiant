@@ -16,7 +16,7 @@ public class UniteEnseignementRequestDTO {
     @NotBlank(message = "L'intitulé est obligatoire")
     private String intitule;
 
-    @NotNull(message = "Les crédits ECTS sont obligatoires")
+    @NotNull(message = "Les crédits sont obligatoires")
     @Min(value = 1, message = "Les crédits doivent être au moins 1")
     private Integer credits;
 

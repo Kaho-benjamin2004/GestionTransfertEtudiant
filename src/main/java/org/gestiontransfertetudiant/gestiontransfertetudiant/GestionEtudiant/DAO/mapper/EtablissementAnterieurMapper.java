@@ -1,8 +1,9 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.mapper;
 
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.EtablissementAnterieurResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request.EtablissementAnterieurRequestDTO;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.response.EtablissementAnterieurResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.EtablissementAnterieur;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.Etudiant;
 
 public class EtablissementAnterieurMapper {
 
@@ -18,7 +19,7 @@ public class EtablissementAnterieurMapper {
                 .build();
     }
 
-    public static EtablissementAnterieur toEntity(EtablissementAnterieurRequestDTO requestDTO) {
+    public static EtablissementAnterieur toEntity(EtablissementAnterieurRequestDTO requestDTO, Etudiant etudiant) {
         if (requestDTO == null) return null;
         EtablissementAnterieur etab = new EtablissementAnterieur();
         etab.setNom(requestDTO.getNom());
@@ -26,6 +27,7 @@ public class EtablissementAnterieurMapper {
         etab.setPays(requestDTO.getPays());
         etab.setAnneeDebut(requestDTO.getAnneeDebut());
         etab.setAnneeFin(requestDTO.getAnneeFin());
+        etab.setEtudiant(etudiant);
         return etab;
     }
 }

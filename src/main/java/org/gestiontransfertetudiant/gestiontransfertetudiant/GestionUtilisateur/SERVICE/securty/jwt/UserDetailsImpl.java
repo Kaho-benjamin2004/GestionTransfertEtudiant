@@ -6,6 +6,8 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -32,6 +34,8 @@ public class UserDetailsImpl implements UserDetails {
                 utilisateur.getActif()
         );
     }
+
+
 
     @Override public String getUsername() { return login; }
     @Override public String getPassword() { return password; }

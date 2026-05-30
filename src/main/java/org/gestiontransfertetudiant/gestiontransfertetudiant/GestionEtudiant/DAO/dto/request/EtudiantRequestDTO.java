@@ -1,4 +1,4 @@
-package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request;
+package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

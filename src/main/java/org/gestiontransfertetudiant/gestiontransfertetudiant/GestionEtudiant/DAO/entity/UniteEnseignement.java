@@ -9,27 +9,17 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "unite_enseignement")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class UniteEnseignement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
     @Column(unique = true, nullable = false)
     private String code;
-
-    @Column(nullable = false)
     private String intitule;
-
     private Integer credits;
-
     private Integer coefficient;
-
-    @OneToMany(mappedBy = "uniteEnseignement", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "uniteEnseignement")
     private List<Note> notes = new ArrayList<>();
 }

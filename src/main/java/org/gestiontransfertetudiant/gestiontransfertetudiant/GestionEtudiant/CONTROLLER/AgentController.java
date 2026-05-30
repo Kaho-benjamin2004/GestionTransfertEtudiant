@@ -2,14 +2,16 @@ package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.CO
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.EtudiantResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request.NoteRequestDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request.SanctionRequestDTO;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.usecase.IEtudiantMetier;
-import org.springframework.data.domain.Page;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.IEtudiantMetier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,54 +22,55 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.UUID;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/agent")
+@RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('AGENT', 'ADMIN')")
 public class AgentController {
 
     private final IEtudiantMetier etudiantMetier;
 
-    @GetMapping("/etudiants/recherche")
-    public String rechercheForm(Model model) {
-        model.addAttribute("pageTitle", "Rechercher un étudiant");
-        model.addAttribute("breadcrumb", "Recherche");
+    @GetMapping("/recherche")
+    public String rechercheForm() {
         return "agent/recherche";
     }
 
-    @GetMapping("/etudiants/recherche/resultats")
-    public String rechercher(@RequestParam String critere, @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "10") int size, Model model) {
-        Page<org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.response.EtudiantResponseDTO> resultats = etudiantMetier.rechercherEtudiants(critere, PageRequest.of(page, size));
-        model.addAttribute("resultats", resultats);
+    @GetMapping("/etudiants")
+    public String rechercher(@RequestParam(required = false) String critere,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "10") int size,
+                             Model model) {
+        model.addAttribute("etudiants", etudiantMetier.rechercherEtudiants(critere, PageRequest.of(page, size)));
         model.addAttribute("critere", critere);
-        model.addAttribute("pageTitle", "Résultats de recherche");
-        model.addAttribute("breadcrumb", "Recherche");
-        return "agent/recherche";
+        return "agent/resultats";
     }
 
     @GetMapping("/etudiants/{id}/dossier")
-    public String dossier(@PathVariable UUID id, Model model) {
-        org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.response.EtudiantResponseDTO etudiant = etudiantMetier.consulterDossierComplet(id);
+    public String dossierComplet(@PathVariable UUID id, Model model) {
+        EtudiantResponseDTO etudiant = etudiantMetier.consulterDossierComplet(id);
         model.addAttribute("etudiant", etudiant);
-        model.addAttribute("pageTitle", "Dossier étudiant");
-        model.addAttribute("breadcrumb", "Dossier");
         return "agent/dossier";
     }
 
-    @GetMapping("/notes/ajouter")
-    public String ajoutNoteForm(Model model) {
+    @GetMapping("/etudiants/{id}/notes/ajouter")
+    public String formAjoutNote(@PathVariable UUID id, Model model) {
         if (!model.containsAttribute("noteRequest")) {
-            model.addAttribute("noteRequest", new NoteRequestDTO());
+            NoteRequestDTO noteRequest = new NoteRequestDTO();
+            // On suppose que l'utilisateur sélectionne le parcours via un champ dans le formulaire
+            model.addAttribute("noteRequest", noteRequest);
         }
-        model.addAttribute("pageTitle", "Ajouter une note");
-        model.addAttribute("breadcrumb", "Notes");
-        return "agent/ajout_note";
+        model.addAttribute("listeUE", etudiantMetier.listerToutesUE());
+        model.addAttribute("etudiantId", id);
+        return "agent/notes/ajouter";
     }
 
     @PostMapping("/notes/ajouter")
     public String ajouterNote(@Valid @ModelAttribute("noteRequest") NoteRequestDTO request,
-                              BindingResult result, RedirectAttributes redirectAttributes) {
+                              BindingResult result,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
         if (result.hasErrors()) {
-            return "agent/ajout_note";
+            model.addAttribute("listeUE", etudiantMetier.listerToutesUE());
+            return "agent/notes/ajouter";
         }
         try {
             etudiantMetier.ajouterNote(request);
@@ -75,24 +78,25 @@ public class AgentController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/agent/notes/ajouter";
+        return "redirect:/agent/etudiants/" + request.getParcoursAcademiqueId() + "/dossier";
     }
 
-    @GetMapping("/sanctions/ajouter")
-    public String ajoutSanctionForm(Model model) {
+    @GetMapping("/etudiants/{id}/sanctions/ajouter")
+    public String formAjoutSanction(@PathVariable UUID id, Model model) {
         if (!model.containsAttribute("sanctionRequest")) {
-            model.addAttribute("sanctionRequest", new SanctionRequestDTO());
+            SanctionRequestDTO request = new SanctionRequestDTO();
+            request.setEtudiantId(id);
+            model.addAttribute("sanctionRequest", request);
         }
-        model.addAttribute("pageTitle", "Ajouter une sanction");
-        model.addAttribute("breadcrumb", "Sanctions");
-        return "agent/ajout_sanction";
+        return "agent/sanctions/ajouter";
     }
 
     @PostMapping("/sanctions/ajouter")
     public String ajouterSanction(@Valid @ModelAttribute("sanctionRequest") SanctionRequestDTO request,
-                                  BindingResult result, RedirectAttributes redirectAttributes) {
+                                  BindingResult result,
+                                  RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "agent/ajout_sanction";
+            return "agent/sanctions/ajouter";
         }
         try {
             etudiantMetier.ajouterSanction(request);
@@ -100,11 +104,23 @@ public class AgentController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/agent/sanctions/ajouter";
+        return "redirect:/agent/etudiants/" + request.getEtudiantId() + "/dossier";
+    }
+
+    @PostMapping("/parcours/{id}/valider")
+    public String validerParcours(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+        try {
+            etudiantMetier.validerParcours(id);
+            redirectAttributes.addFlashAttribute("success", "Parcours validé.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/agent/etudiants/" + id + "/dossier";
     }
 
     @GetMapping("/releve/{etudiantId}/{parcoursId}")
-    public ResponseEntity<byte[]> genererReleve(@PathVariable UUID etudiantId, @PathVariable UUID parcoursId) {
+    public ResponseEntity<byte[]> genererReleve(@PathVariable UUID etudiantId,
+                                                @PathVariable UUID parcoursId) {
         byte[] pdf = etudiantMetier.genererReleveNotes(etudiantId, parcoursId);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=releve_notes.pdf")

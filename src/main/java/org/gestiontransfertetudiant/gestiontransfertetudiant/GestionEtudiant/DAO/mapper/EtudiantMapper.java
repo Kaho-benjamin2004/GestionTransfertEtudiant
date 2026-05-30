@@ -1,16 +1,16 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.mapper;
 
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request.EtudiantRequestDTO;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.EtudiantResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.Etudiant;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Utilisateur;
 
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Utilisateur;
 import java.util.stream.Collectors;
 
 public class EtudiantMapper {
 
-    public static org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.response.EtudiantResponseDTO toDTO(Etudiant etudiant) {
+    public static EtudiantResponseDTO toDTO(Etudiant etudiant) {
         if (etudiant == null) return null;
-        return org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.response.EtudiantResponseDTO.builder()
+        return EtudiantResponseDTO.builder()
                 .id(etudiant.getId())
                 .numeroEtudiant(etudiant.getNumeroEtudiant())
                 .dateInscription(etudiant.getDateInscription())
@@ -38,7 +38,7 @@ public class EtudiantMapper {
                 .build();
     }
 
-    public static Etudiant toEntity(EtudiantRequestDTO requestDTO, Utilisateur utilisateur) {
+    public static Etudiant toEntity(org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.request.EtudiantRequestDTO requestDTO, Utilisateur utilisateur) {
         if (requestDTO == null) return null;
         Etudiant etudiant = new Etudiant();
         etudiant.setNumeroEtudiant(requestDTO.getNumeroEtudiant());

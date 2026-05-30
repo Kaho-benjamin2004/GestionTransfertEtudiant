@@ -24,7 +24,7 @@ public class SanctionRequestDTO {
     private String gravite;
 
     @Min(value = 0, message = "La durée doit être >= 0")
-    private Integer duree; // en jours, optionnel
+    private Integer duree;
 
     @NotNull(message = "L'ID étudiant est obligatoire")
     private UUID etudiantId;

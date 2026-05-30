@@ -2,6 +2,7 @@ package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DA
 
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.Sanction;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 import java.util.UUID;
 

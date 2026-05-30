@@ -1,6 +1,6 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.mapper;
 
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.response.UniteEnseignementResponseDTO;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.UniteEnseignementResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.entity.UniteEnseignement;
 
 public class UniteEnseignementMapper {

@@ -1,30 +1,39 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.CONTROLLER;
 
 import lombok.RequiredArgsConstructor;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.response.StatistiquesDTO;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.usecase.IEtudiantMetier;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.IEtudiantMetier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/statistiques")
+@RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminStatistiquesController {
 
     private final IEtudiantMetier etudiantMetier;
 
-    @GetMapping
-    public String statistiques(@RequestParam(required = false) String filiere,
-                               @RequestParam(required = false) String annee, Model model) {
-        if (filiere != null && annee != null) {
-            StatistiquesDTO stats = etudiantMetier.exporterStatistiques(filiere, annee);
-            model.addAttribute("stats", stats);
+    @GetMapping("/form")
+    public String formulaireStatistiques() {
+        return "admin/statistiques/form";
+    }
+
+    @GetMapping("/export")
+    public String exporter(@RequestParam String filiere,
+                           @RequestParam String anneeUniversitaire,
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("stats", etudiantMetier.exporterStatistiques(filiere, anneeUniversitaire));
+            return "admin/statistiques/resultat";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/statistiques/form";
         }
-        model.addAttribute("pageTitle", "Statistiques académiques");
-        model.addAttribute("breadcrumb", "Statistiques");
-        return "admin/statistiques";
     }
 }

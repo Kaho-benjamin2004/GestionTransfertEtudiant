@@ -15,7 +15,7 @@ public class ParcoursAcademiqueRequestDTO {
     @Pattern(regexp = "^\\d{4}-\\d{4}$", message = "Format attendu : YYYY-YYYY")
     private String anneeUniversitaire;
 
-    private String statut; // En cours, Validé, Échoué
+    private String statut; // "En cours", "Validé", "Échoué"
 
     @NotNull(message = "L'ID étudiant est obligatoire")
     private UUID etudiantId;

@@ -1,22 +1,28 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.CONTROLLER;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.response.CreditResponseDTO;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.response.SanctionResponseDTO;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.usecase.IEtudiantMetier;
+
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.EtudiantResponseDTO;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.IEtudiantMetier;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.request.ProfilRequestDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.securty.jwt.UserDetailsImpl;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import java.util.List;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
 import java.util.UUID;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/etudiant")
+@RequiredArgsConstructor
+@PreAuthorize("hasRole('ETUDIANT')")
 public class EtudiantController {
 
     private final IEtudiantMetier etudiantMetier;
@@ -24,48 +30,62 @@ public class EtudiantController {
     private UUID getCurrentEtudiantId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-        // On suppose que l'étudiant est lié à l'utilisateur via EtudiantRepository.findByUtilisateurId()
-        // À implémenter : récupérer l'ID étudiant à partir de l'ID utilisateur
-        return etudiantMetier.findEtudiantIdByUtilisateurId(userDetails.getId());
+        return etudiantMetier.getEtudiantIdByUtilisateurId(userDetails.getId());
     }
 
     @GetMapping("/historique")
     public String historique(Model model) {
         UUID etudiantId = getCurrentEtudiantId();
-        org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.response.EtudiantResponseDTO etudiant = etudiantMetier.consulterHistorique(etudiantId);
+        EtudiantResponseDTO etudiant = etudiantMetier.consulterHistorique(etudiantId);
         model.addAttribute("etudiant", etudiant);
-        model.addAttribute("pageTitle", "Historique académique");
-        model.addAttribute("breadcrumb", "Historique");
         return "etudiant/historique";
     }
 
     @GetMapping("/credits")
     public String credits(Model model) {
         UUID etudiantId = getCurrentEtudiantId();
-        List<CreditResponseDTO> credits = etudiantMetier.consulterCreditsValides(etudiantId);
-        model.addAttribute("credits", credits);
-        model.addAttribute("pageTitle", "Mes crédits ECTS");
-        model.addAttribute("breadcrumb", "Crédits");
+        model.addAttribute("credits", etudiantMetier.consulterCreditsValides(etudiantId));
         return "etudiant/credits";
     }
 
     @GetMapping("/sanctions")
     public String sanctions(Model model) {
         UUID etudiantId = getCurrentEtudiantId();
-        List<SanctionResponseDTO> sanctions = etudiantMetier.consulterSanctions(etudiantId);
-        model.addAttribute("sanctions", sanctions);
-        model.addAttribute("pageTitle", "Mes sanctions");
-        model.addAttribute("breadcrumb", "Sanctions");
+        model.addAttribute("sanctions", etudiantMetier.consulterSanctions(etudiantId));
         return "etudiant/sanctions";
     }
 
-    @GetMapping("/etablissements")
-    public String etablissements(Model model) {
+    @GetMapping("/profil/view")
+    public String viewProfil(Model model) {
         UUID etudiantId = getCurrentEtudiantId();
-        org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DTO.response.EtudiantResponseDTO etudiant = etudiantMetier.consulterHistorique(etudiantId);
-        model.addAttribute("etablissements", etudiant.getEtablissementsAnterieurs());
-        model.addAttribute("pageTitle", "Établissements précédents");
-        model.addAttribute("breadcrumb", "Établissements");
-        return "etudiant/etablissements";
+        EtudiantResponseDTO etudiant = etudiantMetier.consulterHistorique(etudiantId);
+        model.addAttribute("etudiant", etudiant);
+        return "etudiant/profil/view";
+    }
+
+    @GetMapping("/profil/edit")
+    public String editProfilForm(Model model) {
+        if (!model.containsAttribute("profilRequest")) {
+            model.addAttribute("profilRequest", new ProfilRequestDTO());
+        }
+        return "etudiant/profil/edit";
+    }
+
+    @PostMapping("/profil/edit")
+    public String updateProfil(@Valid @ModelAttribute("profilRequest") ProfilRequestDTO request,
+                               BindingResult result,
+                               RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "etudiant/profil/edit";
+        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+        try {
+            etudiantMetier.modifierInformationsPersonnelles(userDetails.getId(), request);
+            redirectAttributes.addFlashAttribute("success", "Profil mis à jour.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/etudiant/profil/view";
     }
 }
