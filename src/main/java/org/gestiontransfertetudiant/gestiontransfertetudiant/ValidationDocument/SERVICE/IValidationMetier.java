@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IValidationMetier {
+    long getValidationsEnAttente();
 
     // Soumettre une entité à validation
     ValidationResponseDTO soumettreValidation(ValidationRequestDTO request, UUID soumissionneurId) throws BusinessException;

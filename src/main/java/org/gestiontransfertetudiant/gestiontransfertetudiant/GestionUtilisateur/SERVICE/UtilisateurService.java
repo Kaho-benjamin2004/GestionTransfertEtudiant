@@ -1,7 +1,7 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.mapper.ProfilMapper;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.mapper.RoleMapper;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.mapper.UtilisateurMapper;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.request.ProfilRequestDTO;
@@ -19,6 +19,7 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +31,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UtilisateurService {
+    private  final  AuthService authService;
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilRepository profilRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UtilisateurRoleService utilisateurRoleService;
     private final UtilisateurRoleRepository utilisateurRoleRepository;
+
+
 
     // Dans UtilisateurService.java
     @Transactional
@@ -56,9 +60,10 @@ public class UtilisateurService {
 
         profilRepository.save(profil);
     }
+   
 
     @Transactional
-    public UtilisateurResponseDTO createUser(UtilisateurRequestDTO request) {
+    public void createUser(UtilisateurRequestDTO request) {
         if (utilisateurRepository.existsByLogin(request.getLogin())) {
             throw new AlreadyExistsException("Login déjà utilisé");
         }
@@ -97,7 +102,7 @@ public class UtilisateurService {
             utilisateurRoleService.assignRoleToUser(utilisateur.getId(), etudiantRole.getId());
         }
 
-        return UtilisateurMapper.toDTO(utilisateur);
+        UtilisateurMapper.toDTO(utilisateur);
     }
 
     @Transactional(readOnly = true)
@@ -140,5 +145,6 @@ public class UtilisateurService {
                 .map(ur -> RoleMapper.toDTO(ur.getRole()))
                 .collect(Collectors.toList());
     }
+
 
 }

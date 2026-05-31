@@ -7,5 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface HistoriqueValidationRepository extends JpaRepository<HistoriqueValidation, UUID> {
-    List<HistoriqueValidation> findByValidationIdOrderByDateActionAsc(UUID validationId);
+
+    List<HistoriqueValidation> findByValidation_IdOrderByDateActionAsc(UUID validationId);
+
 }

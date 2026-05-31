@@ -30,4 +30,6 @@ public class DemandeTransfert {
     private Equivalence equivalence;
     @OneToMany(mappedBy = "demande", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransfertAudit> audits = new ArrayList<>();
+
+
 }

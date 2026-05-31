@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ValidationRepository extends JpaRepository<Validation, UUID> {
+    long countByStatut(String statut);
     List<Validation> findByEntiteIdAndEntiteType(UUID entiteId, String entiteType);
     Optional<Validation> findFirstByEntiteIdAndEntiteTypeOrderByDateSoumissionDesc(UUID entiteId, String entiteType);
 }

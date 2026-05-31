@@ -42,6 +42,12 @@ public class ValidationMetierImpl implements IValidationMetier {
     private final HistoriqueValidationRepository historiqueRepository;
 
     @Override
+    @Transactional(readOnly = true)
+    public long getValidationsEnAttente() {
+        return validationRepository.countByStatut("EN_ATTENTE");
+    }
+
+    @Override
     public ValidationResponseDTO soumettreValidation(ValidationRequestDTO request, UUID soumissionneurId) throws BusinessException {
         // Vérifier qu'il n'existe pas déjà une validation en cours pour cette entité
         List<Validation> existantes = validationRepository.findByEntiteIdAndEntiteType(request.getEntiteId(), request.getEntiteType());

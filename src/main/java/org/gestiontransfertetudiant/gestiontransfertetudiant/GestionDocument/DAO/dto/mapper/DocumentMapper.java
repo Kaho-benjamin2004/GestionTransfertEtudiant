@@ -5,6 +5,7 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionDocument.DAO
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionDocument.DAO.entity.Document;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DocumentMapper {
@@ -30,15 +31,27 @@ public class DocumentMapper {
                 .build();
     }
 
-    public static Document toEntity(DocumentRequestDTO requestDTO, String cheminStockage, String hash) {
-        if (requestDTO == null) return null;
-        Document document = new Document();
-        document.setNom(requestDTO.getFichier().getOriginalFilename());
-        document.setType(requestDTO.getType());
-        document.setCheminStockage(cheminStockage);
-        document.setHash(hash);
-        document.setDateDepot(LocalDateTime.now());
-        document.setStatut("EN_ATTENTE");
-        return document;
-    }
+//    public static Document toEntity(DocumentRequestDTO requestDTO, String cheminStockage, String hash) {
+//        if (requestDTO == null) return null;
+//        Document document = new Document();
+//        document.setNom(requestDTO.getFichier().getOriginalFilename());
+//        document.setType(requestDTO.getType());
+//        document.setCheminStockage(cheminStockage);
+//        document.setHash(hash);
+//        document.setDateDepot(LocalDateTime.now());
+//        document.setStatut("EN_ATTENTE");
+//        return document;
+//    }
+public static Document toEntity(DocumentRequestDTO requestDTO, String cheminStockage, String hash, UUID proprietaireId) {
+    if (requestDTO == null) return null;
+    Document document = new Document();
+    document.setNom(requestDTO.getFichier().getOriginalFilename());
+    document.setType(requestDTO.getType());
+    document.setCheminStockage(cheminStockage);
+    document.setHash(hash);
+    document.setDateDepot(LocalDateTime.now());
+    document.setStatut("EN_ATTENTE");
+    document.setProprietaireId(proprietaireId);   // ← ajout
+    return document;
+}
 }

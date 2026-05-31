@@ -7,6 +7,8 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionDocument.DAO
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionDocument.DAO.dto.response.DocumentResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionDocument.SERVICE.IDocumentMetier;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.securty.jwt.UserDetailsImpl;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,14 +60,21 @@ public class DocumentController {
             return "redirect:/etudiant/documents/deposer";
         }
     }
-
-    @GetMapping("/mes-documents")
-    public String mesDocuments(Model model) {
-        List<DocumentResponseDTO> documents = documentMetier.listerDocumentsParProprietaire(getCurrentUserId());
-        model.addAttribute("documents", documents);
-        return "etudiant/documents/liste";
-    }
-
+//
+//    @GetMapping("/mes-documents")
+//    public String mesDocuments(Model model) {
+//        List<DocumentResponseDTO> documents = (List<DocumentResponseDTO>) documentMetier.listerDocumentsParProprietaire(getCurrentUserId());
+//        model.addAttribute("documents", documents);
+//        return "etudiant/documents/liste";
+//    }
+@GetMapping("/mes-documents")
+public String mesDocuments(@RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "10") int size,
+                           Model model) {
+    Page<DocumentResponseDTO> documents = documentMetier.listerDocumentsParProprietaire(getCurrentUserId(), PageRequest.of(page, size));
+    model.addAttribute("documents", documents);
+    return "etudiant/documents/liste";
+}
     @GetMapping("/{id}")
     public String voirDocument(@PathVariable UUID id, Model model, RedirectAttributes redirectAttributes) {
         try {

@@ -14,6 +14,7 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionNotifiaction
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionNotifiactions.DAO.entity.Notification;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionNotifiactions.DAO.entity.PreferenceNotification;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionNotifiactions.SERVICE.INotificationMetier;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionNotifiactions.config.NotificationDispatcher;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.BusinessException;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
@@ -33,24 +34,38 @@ import java.util.stream.Collectors;
 public class NotificationMetierImpl implements INotificationMetier {
 
     private final NotificationRepository notificationRepository;
+    private final NotificationDispatcher notificationDispatcher;
     private final PreferenceNotificationRepository preferenceRepository;
+
 
     @Override
     @Async
     public void envoyerNotification(NotificationRequestDTO request) throws BusinessException {
-        // Vérifier les préférences de l'utilisateur
-        List<PreferenceNotification> prefs = preferenceRepository.findByUtilisateurId(request.getDestinataireId());
-        boolean peutEnvoyer = prefs.stream()
-                .anyMatch(p -> p.getCanal().equals(request.getType()) && p.getActif());
-        if (!peutEnvoyer) {
-            log.info("Notification non envoyée (préférence désactivée) pour utilisateur {}", request.getDestinataireId());
-            return;
-        }
+        // Vérifier les préférences (déjà fait dans le dispatcher, donc on peut simplifier)
+        // Enregistrer en base
         Notification notification = NotificationMapper.toEntity(request);
         notification = notificationRepository.save(notification);
-        // Ici, implémenter l'envoi réel (email, SMS, etc.) via des services dédiés
-        log.info("Notification {} envoyée à {}", notification.getId(), request.getDestinataireId());
+        // Envoyer via le dispatcher (asynchrone)
+        notificationDispatcher.envoyer(request);
+        log.info("Notification {} enregistrée et dispatchée", notification.getId());
     }
+//
+//    @Override
+//    @Async
+//    public void envoyerNotification(NotificationRequestDTO request) throws BusinessException {
+//        // Vérifier les préférences de l'utilisateur
+//        List<PreferenceNotification> prefs = preferenceRepository.findByUtilisateurId(request.getDestinataireId());
+//        boolean peutEnvoyer = prefs.stream()
+//                .anyMatch(p -> p.getCanal().equals(request.getType()) && p.getActif());
+//        if (!peutEnvoyer) {
+//            log.info("Notification non envoyée (préférence désactivée) pour utilisateur {}", request.getDestinataireId());
+//            return;
+//        }
+//        Notification notification = NotificationMapper.toEntity(request);
+//        notification = notificationRepository.save(notification);
+//        // Ici, implémenter l'envoi réel (email, SMS, etc.) via des services dédiés
+//        log.info("Notification {} envoyée à {}", notification.getId(), request.getDestinataireId());
+//    }
 
     @Override
     @Transactional(readOnly = true)

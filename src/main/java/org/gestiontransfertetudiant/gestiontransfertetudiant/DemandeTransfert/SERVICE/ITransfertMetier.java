@@ -1,6 +1,7 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.DemandeTransfert.SERVICE;
 
 
+import org.gestiontransfertetudiant.gestiontransfertetudiant.DemandeTransfert.DAO.dto.TransfertExportDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.DemandeTransfert.DAO.dto.request.CoursEquivalentRequestDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.DemandeTransfert.DAO.dto.request.DemandeTransfertRequestDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.DemandeTransfert.DAO.dto.request.EquivalenceRequestDTO;
@@ -11,10 +12,15 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public interface ITransfertMetier {
+    List<TransfertExportDTO> getTransfertsForExport(LocalDate dateDebut, LocalDate dateFin, String statut);
+    long getTotalTransferts();
+    long getTransfertsByStatut(String statut);
+    
 
     // ========== Étudiant ==========
     DemandeTransfertResponseDTO creerDemande(DemandeTransfertRequestDTO request) throws BusinessException;

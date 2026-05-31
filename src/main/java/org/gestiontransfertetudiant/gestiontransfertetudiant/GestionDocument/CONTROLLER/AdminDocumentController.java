@@ -3,6 +3,7 @@ package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionDocument.CO
 import lombok.RequiredArgsConstructor;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionDocument.SERVICE.IDocumentMetier;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.securty.jwt.UserDetailsImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.UUID;
+
 
 @Controller
 @RequestMapping("/admin/documents")
@@ -76,7 +78,9 @@ public class AdminDocumentController {
     @GetMapping("/liste")
     public String listerTousDocuments(Model model) {
         // Cette méthode peut être enrichie pour afficher tous les documents avec pagination
-        model.addAttribute("documents", documentMetier.listerDocumentsParProprietaire(null)); // à adapter
+        int page = 0;
+        int size = 0;
+        model.addAttribute("documents", documentMetier.listerDocumentsParProprietaire(null, PageRequest.of(page, size))); // à adapter
         return "admin/documents/liste";
     }
 }
