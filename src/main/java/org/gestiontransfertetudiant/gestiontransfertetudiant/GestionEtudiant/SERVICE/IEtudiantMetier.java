@@ -19,6 +19,9 @@ import java.util.UUID;
 
 public interface IEtudiantMetier {
 
+    void mettreAJourParcoursEtNiveau(UUID etudiantId, String parcoursActuel, String niveau) throws ResourceNotFoundException;
+    List<EtablissementAnterieurResponseDTO> getEtablissementsAnterieurs(UUID etudiantId) throws ResourceNotFoundException;
+
     void creerEtudiantPourUtilisateur(UUID utilisateurId, String numeroEtudiant) throws BusinessException;
 
     // ========== Cas d'utilisation Étudiant ==========

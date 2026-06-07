@@ -9,6 +9,9 @@ import java.util.UUID;
 public class ProfilResponseDTO {
     private UUID id;
     private String nom;
+
+    private String photoUrl;
+    private String coverPhotoUrl;
     private String prenom;
     private String email;
     private String telephone;

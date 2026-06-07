@@ -20,6 +20,9 @@ public class EtudiantResponseDTO {
     private String matriculeNational;
     private String telephone;
     private String email;
+
+    private String photoUrl;
+    private String coverPhotoUrl;
     private List<ParcoursAcademiqueResponseDTO> parcoursAcademiques;
     private List<SanctionResponseDTO> sanctions;
     private List<EtablissementAnterieurResponseDTO> etablissementsAnterieurs;

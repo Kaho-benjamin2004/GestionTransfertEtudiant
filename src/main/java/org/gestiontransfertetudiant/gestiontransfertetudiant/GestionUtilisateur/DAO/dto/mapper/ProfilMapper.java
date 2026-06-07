@@ -14,6 +14,8 @@ public class ProfilMapper {
                 .nom(profil.getNom())
                 .prenom(profil.getPrenom())
                 .email(profil.getEmail())
+                .photoUrl(profil.getPhotoUrl())
+                .coverPhotoUrl(profil.getCoverPhotoUrl())
                 .telephone(profil.getTelephone())
                 .matriculeNational(profil.getMatriculeNational())
                 .fonction(profil.getFonction())
@@ -25,6 +27,8 @@ public class ProfilMapper {
         if (requestDTO == null) return null;
         Profil profil = new Profil();
         profil.setNom(requestDTO.getNom());
+        profil.setPhotoUrl(requestDTO.getPhotoUrl());
+        profil.setCoverPhotoUrl(requestDTO.getCoverPhotoUrl());
         profil.setPrenom(requestDTO.getPrenom());
         profil.setEmail(requestDTO.getEmail());
         profil.setTelephone(requestDTO.getTelephone());

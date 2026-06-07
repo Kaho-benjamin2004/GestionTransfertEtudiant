@@ -23,6 +23,6 @@ public class EtablissementAnterieurRequestDTO {
     @Min(value = 1900, message = "Année fin invalide")
     private Integer anneeFin;
 
-    @NotNull(message = "L'ID étudiant est obligatoire")
+
     private UUID etudiantId;
 }

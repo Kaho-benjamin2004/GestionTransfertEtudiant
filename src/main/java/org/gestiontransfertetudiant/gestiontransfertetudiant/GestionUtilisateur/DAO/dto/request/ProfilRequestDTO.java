@@ -12,6 +12,11 @@ public class ProfilRequestDTO {
     @NotBlank(message = "Le nom est obligatoire")
     private String nom;
 
+    // ProfilRequestDTO.java
+// Ajoutez ces champs (ils ne seront pas envoyés via formulaire mais via des endpoints dédiés)
+    private String photoUrl;
+    private String coverPhotoUrl;
+
     @NotBlank(message = "Le prénom est obligatoire")
     private String prenom;
 

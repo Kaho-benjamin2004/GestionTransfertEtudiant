@@ -31,6 +31,8 @@ public class Profil {
     @Column(length = 20)
     private String telephone;
 
+    private String photoUrl;
+    private String coverPhotoUrl;
     private String matriculeNational;
 
     private String fonction;

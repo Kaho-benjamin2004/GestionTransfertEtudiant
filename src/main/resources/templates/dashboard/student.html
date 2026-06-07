@@ -68,8 +68,8 @@
                 <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold transition duration-200 shadow-md">
                     <i class="fa-solid fa-chart-pie w-5 text-center text-lg"></i><span>Tableau de bord</span>
                 </a>
-                <a href="#" onclick="switchTab('mes-demandes')" id="nav-mes-demandes" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition duration-200">
-                    <i class="fa-solid fa-file-signature w-5 text-center text-lg"></i><span>Mes demandes</span>
+                <a th:href="@{/etudiant/transferts/creer}" onclick="switchTab('mes-demandes')" id="nav-mes-demandes" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition duration-200">
+                    <i class="fa-solid fa-file-signature w-5 text-center text-lg"></i><span>Demande de transfert</span>
                 </a>
                 <a href="#" onclick="switchTab('cours')" id="nav-cours" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition duration-200">
                     <i class="fa-solid fa-book-open w-5 text-center text-lg"></i><span>Mes cours</span>
@@ -77,6 +77,9 @@
                 <a th:href="@{/etudiant/historique}" id="nav-historique" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition duration-200">
                     <i class="fa-solid fa-history w-5 text-center text-lg"></i><span>Mon historique</span>
                 </a>
+<!--                <a th:href="@{/etudiant/transferts/creer}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition">-->
+<!--                    <i class="fa-solid fa-file-signature w-5"></i><span>Demande de transfert</span>-->
+<!--                </a>-->
                 <a th:href="@{/etudiant/profil/view}" id="nav-profil" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition duration-200">
                     <i class="fa-solid fa-user-circle w-5 text-center text-lg"></i><span>Mon profil</span>
                 </a>

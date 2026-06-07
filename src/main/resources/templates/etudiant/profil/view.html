@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head('Mon historique - Université de l Excellence')"></head>
-<!--<head th:replace="~{fragments/head :: head('Mon profil - Université de l\'Excellence')}"></head>-->
+<head th:replace="fragments/head :: head('Mon profil - Université de l Excellence')"></head>
 <body class="bg-campus-blur min-h-screen">
 <div class="flex h-screen overflow-hidden">
-<!--    <div th:replace="fragments/sidebar :: sidebar"></div>-->
-    <!-- Sidebar étudiant (identique aux autres pages étudiantes) -->
+    <!-- Sidebar étudiant (identique) -->
     <aside class="w-72 bg-univ-navy text-white flex flex-col justify-between shadow-2xl z-30 flex-shrink-0 border-r border-univ-gold/20">
         <div>
             <div class="p-6 border-b border-white/10 flex flex-col items-center">
                 <div class="flex items-center space-x-3">
-                    <svg class="w-10 h-10 text-univ-gold" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-10 h-10 text-univ-gold" viewBox="0 0 100 100" fill="none">
                         <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>
                         <path d="M25 65 C20 50,25 35,35 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
                         <path d="M75 65 C80 50,75 35,65 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
@@ -54,22 +52,276 @@
             </div>
         </header>
 
+<!--        <main class="flex-grow p-8 overflow-y-auto custom-scrollbar">-->
+<!--            <div class="content-card p-6 max-w-2xl mx-auto">-->
+<!--                &lt;!&ndash; Section photo de couverture et photo de profil (style Facebook) &ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="relative -mt-16 -mx-6 mb-6">&ndash;&gt;-->
+<!--&lt;!&ndash;                    &lt;!&ndash; Photo de couverture avec upload &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div th:if="${etudiant.coverPhotoUrl != null}"&ndash;&gt;-->
+<!--&lt;!&ndash;                         th:style="'background-image: url(' + @{${etudiant.coverPhotoUrl}} + ')'"&ndash;&gt;-->
+<!--&lt;!&ndash;                         class="w-full h-40 bg-cover bg-center rounded-t-xl">&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    &lt;!&ndash; Fallback si pas de photo de couverture &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div th:unless="${etudiant.coverPhotoUrl != null}"&ndash;&gt;-->
+<!--&lt;!&ndash;                         class="w-full h-40 bg-gradient-to-r from-univ-navy to-univ-navyLight rounded-t-xl flex items-center justify-center">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <span class="text-white/50 text-sm">Aucune photo de couverture</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;                    &lt;!&ndash; Bouton pour changer la couverture (toujours visible) &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                    <form th:action="@{/utilisateur/photo/couverture}" method="post" enctype="multipart/form-data" class="absolute bottom-3 right-3">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <label class="bg-black/50 text-white p-2 rounded-full cursor-pointer hover:bg-black/70 transition">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <i class="fas fa-camera"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <input type="file" name="file" accept="image/*" class="hidden" onchange="this.form.submit()">&ndash;&gt;-->
+<!--&lt;!&ndash;                        </label>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </form>&ndash;&gt;-->
+
+<!--&lt;!&ndash;                    &lt;!&ndash; Photo de profil avec upload &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="absolute -bottom-12 left-6 w-24 h-24 rounded-full border-4 border-white bg-white overflow-hidden">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <img th:src="${etudiant.photoUrl != null ? etudiant.photoUrl : 'https://ui-avatars.com/api/?background=133054&color=bfa15f&bold=true&name=' + etudiant.prenom + '+' + etudiant.nom}"&ndash;&gt;-->
+<!--&lt;!&ndash;                             class="w-full h-full object-cover">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <form th:action="@{/utilisateur/photo/profil}" method="post" enctype="multipart/form-data" class="absolute bottom-0 right-0">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <label class="bg-univ-gold p-1 rounded-full cursor-pointer hover:bg-univ-goldLight transition">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <i class="fas fa-camera text-white text-xs"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <input type="file" name="file" accept="image/*" class="hidden" onchange="this.form.submit()">&ndash;&gt;-->
+<!--&lt;!&ndash;                            </label>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </form>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="h-12"></div> &lt;!&ndash; Espace pour compenser le décalage &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--                &lt;!&ndash; Photo de couverture &ndash;&gt;-->
+<!--                <div class="relative w-full h-40 rounded-t-xl overflow-hidden">-->
+<!--                    &lt;!&ndash; Image ou fallback &ndash;&gt;-->
+<!--                    <div th:if="${etudiant.coverPhotoUrl != null}"-->
+<!--                         th:style="'background-image: url(' + @{${etudiant.coverPhotoUrl}} + ')'"-->
+<!--                         class="absolute inset-0 bg-cover bg-center">-->
+<!--                    </div>-->
+<!--                    <div th:unless="${etudiant.coverPhotoUrl != null}"-->
+<!--                         class="absolute inset-0 bg-gradient-to-r from-univ-navy to-univ-navyLight flex items-center justify-center">-->
+<!--                        <span class="text-white/50 text-sm">Aucune photo de couverture</span>-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash; Bouton d'upload positionné en bas à droite &ndash;&gt;-->
+<!--                    <form th:action="@{/utilisateur/photo/couverture}" method="post" enctype="multipart/form-data" class="absolute bottom-3 right-3 z-10">-->
+<!--                        <label class="bg-black/50 text-white p-2 rounded-full cursor-pointer hover:bg-black/70 transition">-->
+<!--                            <i class="fas fa-camera"></i>-->
+<!--                            <input type="file" name="file" accept="image/*" class="hidden" onchange="this.form.submit()">-->
+<!--                        </label>-->
+<!--                    </form>-->
+
+<!--                                        &lt;!&ndash; Photo de profil avec upload &ndash;&gt;-->
+<!--                                        <div class="absolute -bottom-12 left-6 w-24 h-24 rounded-full border-4 border-white bg-white overflow-hidden">-->
+<!--                                            <img th:src="${etudiant.photoUrl != null ? etudiant.photoUrl : 'https://ui-avatars.com/api/?background=133054&color=bfa15f&bold=true&name=' + etudiant.prenom + '+' + etudiant.nom}"-->
+<!--                                                 class="w-full h-full object-cover">-->
+<!--                                            <form th:action="@{/utilisateur/photo/profil}" method="post" enctype="multipart/form-data" class="absolute bottom-0 right-0">-->
+<!--                                                <label class="bg-univ-gold p-1 rounded-full cursor-pointer hover:bg-univ-goldLight transition">-->
+<!--                                                    <i class="fas fa-camera text-white text-xs"></i>-->
+<!--                                                    <input type="file" name="file" accept="image/*" class="hidden" onchange="this.form.submit()">-->
+<!--                                                </label>-->
+<!--                                            </form>-->
+<!--                                        </div>-->
+<!--                                        <div class="h-12"></div> &lt;!&ndash; Espace pour compenser le décalage &ndash;&gt;-->
+<!--                                    </div>-->
+
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Informations personnelles &ndash;&gt;-->
+<!--                <div class="space-y-3">-->
+<!--                    <p><strong>Nom :</strong> <span th:text="${etudiant.nom}">-</span></p>-->
+<!--                    <p><strong>Prénom :</strong> <span th:text="${etudiant.prenom}">-</span></p>-->
+<!--                    <p><strong>Email :</strong> <span th:text="${etudiant.email}">-</span></p>-->
+<!--                    <p><strong>Téléphone :</strong> <span th:text="${etudiant.telephone}">-</span></p>-->
+<!--                    <p><strong>Matricule national :</strong> <span th:text="${etudiant.matriculeNational}">-</span></p>-->
+<!--                    <p><strong>Numéro étudiant :</strong> <span th:text="${etudiant.numeroEtudiant}">-</span></p>-->
+<!--                    <p><strong>Date d'inscription :</strong> <span th:text="${etudiant.dateInscription}">-</span></p>-->
+<!--                    <p><strong>Parcours actuel :</strong> <span th:text="${etudiant.parcoursActuel}">-</span></p>-->
+<!--                    <p><strong>Niveau :</strong> <span th:text="${etudiant.niveau}">-</span></p>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Mise à jour du parcours et du niveau &ndash;&gt;-->
+<!--                <div class="mt-8 p-4 bg-univ-navy/5 rounded-xl">-->
+<!--                    <h3 class="text-lg font-bold text-univ-navy mb-3">Mes études actuelles</h3>-->
+<!--                    <form th:action="@{/etudiant/profil/update-parcours}" method="post" class="space-y-3">-->
+<!--                        <div>-->
+<!--                            <label class="block text-xs font-bold text-slate-600 uppercase">Parcours / Filière</label>-->
+<!--                            <input type="text" name="parcoursActuel" th:value="${etudiant.parcoursActuel}" class="w-full border rounded-xl p-2 bg-white/80">-->
+<!--                        </div>-->
+<!--                        <div>-->
+<!--                            <label class="block text-xs font-bold text-slate-600 uppercase">Niveau</label>-->
+<!--                            <select name="niveau" class="w-full border rounded-xl p-2 bg-white/80">-->
+<!--                                <option value="">Sélectionner</option>-->
+<!--                                <option value="L1" th:selected="${etudiant.niveau == 'L1'}">Licence 1</option>-->
+<!--                                <option value="L2" th:selected="${etudiant.niveau == 'L2'}">Licence 2</option>-->
+<!--                                <option value="L3" th:selected="${etudiant.niveau == 'L3'}">Licence 3</option>-->
+<!--                                <option value="M1" th:selected="${etudiant.niveau == 'M1'}">Master 1</option>-->
+<!--                                <option value="M2" th:selected="${etudiant.niveau == 'M2'}">Master 2</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <button type="submit" class="bg-univ-navy text-white px-4 py-2 rounded-xl hover:bg-univ-navyLight transition">Enregistrer les modifications</button>-->
+<!--                    </form>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Établissements antérieurs &ndash;&gt;-->
+<!--                <div class="mt-6">-->
+<!--                    <h3 class="text-lg font-bold text-univ-navy mb-3">Établissements antérieurs</h3>-->
+<!--                    <div th:if="${etablissements == null or etablissements.empty}" class="text-slate-500 italic">-->
+<!--                        Aucun établissement antérieur enregistré.-->
+<!--                    </div>-->
+<!--                    <div th:unless="${etablissements == null or etablissements.empty}" class="space-y-3">-->
+<!--                        <div th:each="e : ${etablissements}" class="border border-slate-200 rounded-lg p-3 flex justify-between items-center">-->
+<!--                            <div>-->
+<!--                                <p class="font-semibold" th:text="${e.nom}">Nom</p>-->
+<!--                                <p class="text-sm text-slate-600" th:text="${e.ville} + (${e.ville != null && e.pays != null ? ', ' : ''}) + ${e.pays}"></p>-->
+<!--                                <p class="text-sm text-slate-500" th:text="${e.anneeDebut} + ' - ' + ${e.anneeFin}"></p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="mt-6 flex justify-end space-x-3">-->
+<!--                    <a th:href="@{/etudiant/etablissements/ajouter}" class="bg-univ-gold text-univ-navy px-4 py-2 rounded-xl hover:bg-univ-goldLight transition">-->
+<!--                        <i class="fas fa-plus mr-2"></i>Ajouter un établissement antérieur-->
+<!--                    </a>-->
+<!--                    <a th:href="@{/etudiant/profil/edit}" class="bg-univ-gold text-univ-navy px-4 py-2 rounded-xl hover:bg-univ-goldLight transition">Modifier mon profil</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </main>-->
         <main class="flex-grow p-8 overflow-y-auto custom-scrollbar">
-            <div class="content-card p-6 max-w-2xl mx-auto">
-                <div class="space-y-3">
-                    <p><strong>Nom :</strong> <span th:text="${etudiant.nom}">-</span></p>
-                    <p><strong>Prénom :</strong> <span th:text="${etudiant.prenom}">-</span></p>
-                    <p><strong>Email :</strong> <span th:text="${etudiant.email}">-</span></p>
-                    <p><strong>Téléphone :</strong> <span th:text="${etudiant.telephone}">-</span></p>
-                    <p><strong>Matricule national :</strong> <span th:text="${etudiant.matriculeNational}">-</span></p>
-                    <p><strong>Numéro étudiant :</strong> <span th:text="${etudiant.numeroEtudiant}">-</span></p>
-                    <!-- Date d'inscription affichée sans formatage personnalisé pour éviter les erreurs de type -->
-                    <p><strong>Date d'inscription :</strong> <span th:text="${etudiant.dateInscription}">-</span></p>
-                    <p><strong>Parcours actuel :</strong> <span th:text="${etudiant.parcoursActuel}">-</span></p>
-                    <p><strong>Niveau :</strong> <span th:text="${etudiant.niveau}">-</span></p>
+            <div class="content-card bg-white rounded-2xl shadow-sm max-w-3xl mx-auto overflow-hidden">
+
+                <div class="relative bg-white pb-6 border-b border-slate-100">
+
+                    <div class="relative w-full h-48 bg-slate-200">
+                        <div th:if="${etudiant.coverPhotoUrl != null}"
+                             th:style="'background-image: url(' + @{${etudiant.coverPhotoUrl}} + ')'"
+                             class="absolute inset-0 bg-cover bg-center">
+                        </div>
+                        <div th:unless="${etudiant.coverPhotoUrl != null}"
+                             class="absolute inset-0 bg-gradient-to-r from-univ-navy to-univ-navyLight flex items-center justify-center">
+                            <span class="text-white/40 text-sm font-medium tracking-wide">Aucune photo de couverture</span>
+                        </div>
+
+                        <form th:action="@{/utilisateur/photo/couverture}" method="post" enctype="multipart/form-data" class="absolute bottom-3 right-3 z-10">
+                            <label class="bg-black/60 hover:bg-black/80 text-white p-2 rounded-full cursor-pointer transition shadow-md flex items-center justify-center w-9 h-9">
+                                <i class="fas fa-camera text-sm"></i>
+                                <input type="file" name="file" accept="image/*" class="hidden" onchange="this.form.submit()">
+                            </label>
+                        </form>
+                    </div>
+
+                    <div class="px-6 pt-1 flex flex-col sm:flex-row items-center sm:items-end justify-between relative">
+
+                        <div class="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white shadow-md overflow-hidden -mt-14 sm:-mt-16 flex-shrink-0 z-20">
+                                <img th:src="${etudiant.photoUrl != null ? etudiant.photoUrl : 'https://ui-avatars.com/api/?background=133054&color=bfa15f&bold=true&name=' + etudiant.prenom + '+' + etudiant.nom}"
+                                     class="w-full h-full object-cover" alt="Photo de profil">
+
+                                <form th:action="@{/utilisateur/photo/profil}" method="post" enctype="multipart/form-data" class="absolute bottom-1 right-1 z-30">
+                                    <label class="bg-univ-gold hover:bg-univ-goldLight text-univ-navy p-1.5 rounded-full cursor-pointer transition shadow-md flex items-center justify-center w-7 h-7 border border-white">
+                                        <i class="fas fa-camera text-xs text-white"></i>
+                                        <input type="file" name="file" accept="image/*" class="hidden" onchange="this.form.submit()">
+                                    </label>
+                                </form>
+                            </div>
+
+                            <div class="text-center sm:text-left pb-2">
+                                <div class="inline-block bg-slate-100 text-slate-700 text-xs px-3 py-1 rounded-full mb-1 border border-slate-200">
+
+                                </div>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-univ-navy flex items-center justify-center sm:justify-start space-x-2">
+                                    <span th:text="${etudiant.nom + ' ' + etudiant.prenom}"><strong  th:text="${etudiant.nom}"></strong></span>
+                                    <i class="fa-solid fa-chevron-down text-sm text-slate-400 ml-1 cursor-pointer hover:text-univ-navy transition"></i>
+                                </h2>
+                                <div class="flex items-center justify-center sm:justify-start space-x-3 text-sm text-slate-500 mt-1">
+                                    <span><strong class="text-slate-900">Nom :</strong> <span th:text="${etudiant.nom}">-</span></span>
+                                    <span class="text-slate-300"><strong class="text-slate-900">Prénom :</strong> <span th:text="${etudiant.prenom}">-</span></span>
+                                    <span><strong class="text-slate-900">Email :</strong> <span th:text="${etudiant.email}">-</span></span>
+                                    <span class="text-slate-300">•</span>
+<!--                                    <span><strong class="text-slate-800">10</strong> publications</span>-->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 sm:mt-0 pb-2 z-10">
+                            <a th:href="@{/etudiant/profil/edit}" class="inline-flex items-center bg-slate-100 hover:bg-slate-200 text-univ-navy font-semibold text-sm px-4 py-2 rounded-xl transition shadow-sm border border-slate-200">
+                                <i class="fas fa-pen mr-2 text-xs"></i> Modifier mon profil
+                            </a>
+                        </div>
+
+                    </div>
                 </div>
-                <div class="mt-6 flex justify-end">
-                    <a th:href="@{/etudiant/profil/edit}" class="bg-univ-gold text-univ-navy px-4 py-2 rounded-xl hover:bg-univ-goldLight transition">Modifier mon profil</a>
+
+                <div class="p-6 space-y-8">
+
+                    <div>
+                        <h3 class="text-lg font-bold text-univ-navy mb-4 flex items-center">
+                            <i class="fa-solid fa-address-card mr-2 text-univ-gold"></i> Informations personnelles
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                            <p class="text-slate-600"><strong class="text-slate-900">Nom :</strong> <span th:text="${etudiant.nom}">-</span></p>
+                            <p class="text-slate-600"><strong class="text-slate-900">Prénom :</strong> <span th:text="${etudiant.prenom}">-</span></p>
+                            <p class="text-slate-600 col-span-1 md:col-span-2"><strong class="text-slate-900">Email :</strong> <span th:text="${etudiant.email}">-</span></p>
+                            <p class="text-slate-600"><strong class="text-slate-900">Téléphone :</strong> <span th:text="${etudiant.telephone}">-</span></p>
+                            <p class="text-slate-600"><strong class="text-slate-900">Matricule national :</strong> <span th:text="${etudiant.matriculeNational}">-</span></p>
+                            <p class="text-slate-600"><strong class="text-slate-900">Numéro étudiant :</strong> <span th:text="${etudiant.numeroEtudiant}">-</span></p>
+                            <p class="text-slate-600"><strong class="text-slate-900">Date d'inscription :</strong> <span th:text="${etudiant.dateInscription}">-</span></p>
+                            <p class="text-slate-600"><strong class="text-slate-900">Parcours actuel :</strong> <span th:text="${etudiant.parcoursActuel}">-</span></p>
+                            <p class="text-slate-600"><strong class="text-slate-900">Niveau :</strong> <span th:text="${etudiant.niveau}">-</span></p>
+                        </div>
+                    </div>
+
+                    <div class="p-5 bg-univ-navy/5 rounded-2xl border border-univ-navy/10">
+                        <h3 class="text-lg font-bold text-univ-navy mb-3 flex items-center">
+                            <i class="fa-solid fa-graduation-cap mr-2 text-univ-gold"></i> Mes études actuelles
+                        </h3>
+                        <form th:action="@{/etudiant/profil/update-parcours}" method="post" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Parcours / Filière</label>
+                                    <input type="text" name="parcoursActuel" th:value="${etudiant.parcoursActuel}" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white shadow-sm focus:outline-none focus:border-univ-gold transition text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Niveau</label>
+                                    <select name="niveau" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white shadow-sm focus:outline-none focus:border-univ-gold transition text-sm">
+                                        <option value="">Sélectionner</option>
+                                        <option value="L1" th:selected="${etudiant.niveau == 'L1'}">Licence 1</option>
+                                        <option value="L2" th:selected="${etudiant.niveau == 'L2'}">Licence 2</option>
+                                        <option value="L3" th:selected="${etudiant.niveau == 'L3'}">Licence 3</option>
+                                        <option value="M1" th:selected="${etudiant.niveau == 'M1'}">Master 1</option>
+                                        <option value="M2" th:selected="${etudiant.niveau == 'M2'}">Master 2</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="bg-univ-navy text-white px-5 py-2.5 rounded-xl hover:bg-univ-navyLight transition text-sm font-semibold shadow-sm">
+                                Enregistrer les modifications
+                            </button>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-univ-navy mb-3 flex items-center">
+                            <i class="fa-solid fa-building-columns mr-2 text-univ-gold"></i> Établissements antérieurs
+                        </h3>
+
+                        <div th:if="${etablissements == null or etablissements.empty}" class="text-slate-500 italic text-sm p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center">
+                            Aucun établissement antérieur enregistré.
+                        </div>
+
+                        <div th:unless="${etablissements == null or etablissements.empty}" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div th:each="e : ${etablissements}" class="border border-slate-200 bg-white shadow-xs rounded-xl p-4 flex justify-between items-center hover:border-slate-300 transition">
+                                <div>
+                                    <p class="font-bold text-slate-800 text-sm" th:text="${e.nom}">Nom de l'école</p>
+                                    <p class="text-xs text-slate-600 mt-0.5" th:text="${e.ville} + (${e.ville != null && e.pays != null ? ', ' : ''}) + ${e.pays}">Ville, Pays</p>
+                                    <p class="text-xs text-slate-400 font-medium mt-1" th:text="${e.anneeDebut} + ' - ' + ${e.anneeFin}">2020 - 2023</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex justify-start">
+                            <a th:href="@{/etudiant/etablissements/ajouter}" class="bg-univ-gold hover:bg-univ-goldLight text-univ-navy font-semibold text-sm px-4 py-2 rounded-xl transition shadow-sm">
+                                <i class="fas fa-plus mr-2 text-xs"></i> Ajouter un établissement antérieur
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>

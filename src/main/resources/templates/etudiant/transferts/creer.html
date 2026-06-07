@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head('Mon etablissement anterieur - Université de l Excellence')"></head>
+<head th:replace="fragments/head :: head('Nouvelle demande de transfert - Université de l Excellence')"></head>
 <body class="bg-campus-blur min-h-screen">
 <div class="flex h-screen overflow-hidden">
     <!-- Sidebar étudiant (identique aux autres pages) -->
@@ -29,7 +29,8 @@
                 <a th:href="@{/etudiant/historique}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-history w-5"></i><span>Mon historique</span></a>
                 <a th:href="@{/etudiant/credits}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-graduation-cap w-5"></i><span>Mes crédits</span></a>
                 <a th:href="@{/etudiant/sanctions}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-exclamation-triangle w-5"></i><span>Mes sanctions</span></a>
-                <a th:href="@{/etudiant/profil/view}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
+                <a th:href="@{/etudiant/profil/view}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
+                <a th:href="@{/etudiant/transferts/creer}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-file-signature w-5"></i><span>Nouveau transfert</span></a>
             </nav>
         </div>
         <div class="p-4 border-t border-white/10"><a th:href="@{/auth/logout}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-rose-300 hover:bg-rose-500/10 transition"><i class="fa-solid fa-power-off w-5"></i><span>Déconnexion</span></a></div>
@@ -38,9 +39,9 @@
     <div class="flex-grow flex flex-col overflow-hidden">
         <header class="h-20 bg-white/80 backdrop-blur-sm border-b border-slate-200 flex items-center justify-between px-8 z-20 shadow-sm">
             <div class="flex items-center space-x-2">
-                <h1 class="text-2xl font-bold text-univ-navy">Ajouter un établissement antérieur</h1>
+                <h1 class="text-2xl font-bold text-univ-navy">Nouvelle demande de transfert</h1>
                 <span class="text-slate-400">/</span>
-                <span class="text-slate-500 font-medium text-sm">Nouveau parcours</span>
+                <span class="text-slate-500 font-medium text-sm">Formulaire</span>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden sm:block">
@@ -52,37 +53,26 @@
         </header>
 
         <main class="flex-grow p-8 overflow-y-auto custom-scrollbar">
-            <div class="content-card p-6 max-w-2xl mx-auto">
-                <h2 class="text-xl font-bold text-univ-navy mb-4">Nouvel établissement</h2>
-                <form th:action="@{/etudiant/etablissements/ajouter}" th:object="${etablissementRequest}" method="post" class="space-y-4">
+            <div class="content-card bg-white rounded-2xl shadow-sm max-w-3xl mx-auto p-6">
+                <h2 class="text-xl font-bold text-univ-navy mb-4 flex items-center">
+                    <i class="fa-solid fa-file-export mr-2 text-univ-gold"></i> Créer une demande
+                </h2>
+                <form th:action="@{/etudiant/transferts/creer}" th:object="${demandeRequest}" method="post" class="space-y-5">
+                    <!-- Affichage des erreurs -->
                     <div th:if="${#fields.hasErrors('*')}" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm">
                         <ul><li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li></ul>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase">Nom de l'établissement *</label>
-                        <input type="text" th:field="*{nom}" required class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase">Ville</label>
-                        <input type="text" th:field="*{ville}" class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase">Pays</label>
-                        <input type="text" th:field="*{pays}" class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase">Année de début</label>
-                        <input type="number" th:field="*{anneeDebut}" class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80" min="1900" max="2030">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase">Année de fin</label>
-                        <input type="number" th:field="*{anneeFin}" class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80" min="1900" max="2030">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Motif de la demande *</label>
+                        <textarea th:field="*{motif}" rows="4" required class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80 focus:border-univ-gold focus:outline-none"></textarea>
                     </div>
 
-                    <div class="flex justify-end space-x-3 pt-4">
-                        <a th:href="@{/etudiant/profil/view}" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl">Annuler</a>
-                        <button type="submit" class="bg-univ-gold text-univ-navy font-bold px-6 py-2 rounded-xl shadow hover:bg-univ-goldLight transition">Ajouter</button>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <a th:href="@{/etudiant/transferts}" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl">Annuler</a>
+                        <button type="submit" class="bg-univ-gold text-univ-navy font-bold px-6 py-2 rounded-xl shadow-sm hover:bg-univ-goldLight transition">
+                            Créer la demande
+                        </button>
                     </div>
                 </form>
             </div>

@@ -26,7 +26,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,8 +52,58 @@ public class UtilisateurService {
     private final UtilisateurRoleRepository utilisateurRoleRepository;
 
 
-
     // Dans UtilisateurService.java
+//    public String savePhotoProfil(UUID userId, MultipartFile file) throws IOException {
+//        // Vérifier l'utilisateur
+//        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", userId));
+//        // Générer un nom unique
+//        String filename = "profil_" + userId + "_" + System.currentTimeMillis() + ".jpg";
+//        String uploadDir = "uploads/profils/";
+//        Path uploadPath = Paths.get(uploadDir);
+//        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+//        Files.copy(file.getInputStream(), uploadPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+//        String photoUrl = "/uploads/profils/" + filename;
+//        // Mettre à jour le profil
+//        Profil profil = utilisateur.getProfil();
+//        profil.setPhotoUrl(photoUrl);
+//        profilRepository.save(profil);
+//        return photoUrl;
+//    }
+    public String savePhotoProfil(UUID userId, MultipartFile file) throws IOException {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", userId));
+        String fileName = "profil_" + userId + "_" + System.currentTimeMillis() + ".jpg";
+        String uploadDir = "uploads/profils/";
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+        Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+        String photoUrl = "/uploads/profils/" + fileName;
+        Profil profil = utilisateur.getProfil();
+        profil.setPhotoUrl(photoUrl);
+        profilRepository.save(profil);
+        return photoUrl;
+    }
+
+    public String savePhotoCouverture(UUID userId, MultipartFile file) throws IOException {
+        Utilisateur utilisateur = utilisateurRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", userId));
+        String fileName = "cover_" + userId + "_" + System.currentTimeMillis() + ".jpg";
+        String uploadDir = "uploads/couvertures/";
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+        Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+        String coverUrl = "/uploads/couvertures/" + fileName;
+        Profil profil = utilisateur.getProfil();
+        profil.setCoverPhotoUrl(coverUrl);
+        profilRepository.save(profil);
+        return coverUrl;
+    }
+
+
+// Même chose pour savePhotoCouverture
+
+
     @Transactional
     public void updateProfil(UUID userId, ProfilRequestDTO profilRequest) {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)

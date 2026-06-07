@@ -3,10 +3,12 @@ package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.CO
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.EtablissementAnterieurResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.reponse.EtudiantResponseDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.dto.request.EtablissementAnterieurRequestDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.IEtudiantMetier;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.request.ProfilRequestDTO;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.BusinessException;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.securty.jwt.UserDetailsImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -54,22 +57,40 @@ public String showAjouterEtablissementForm(Model model) {
     return "etudiant/etablissements/ajouter";
 }
 
-    @PostMapping("/etablissements/ajouter")
-    public String ajouterEtablissement(@Valid @ModelAttribute("etablissementRequest") EtablissementAnterieurRequestDTO request,
-                                       BindingResult result,
-                                       RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            return "etudiant/etablissements/ajouter";
-        }
-        try {
-            UUID etudiantId = getCurrentEtudiantId();
-            etudiantMetier.ajouterEtablissementAnterieur(etudiantId, request);
-            redirectAttributes.addFlashAttribute("success", "Établissement antérieur ajouté avec succès.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
-        return "redirect:/etudiant/profil/view";
+//    @PostMapping("/etablissements/ajouter")
+//    public String ajouterEtablissement(@Valid @ModelAttribute("etablissementRequest") EtablissementAnterieurRequestDTO request,
+//                                       BindingResult result,
+//                                       RedirectAttributes redirectAttributes) {
+//        if (result.hasErrors()) {
+//            return "etudiant/etablissements/ajouter";
+//        }
+//        try {
+//            UUID etudiantId = getCurrentEtudiantId();
+//            etudiantMetier.ajouterEtablissementAnterieur(etudiantId, request);
+//            redirectAttributes.addFlashAttribute("success", "Établissement antérieur ajouté avec succès.");
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", e.getMessage());
+//        }
+//        return "redirect:/etudiant/profil/view";
+//    }
+@PostMapping("/etablissements/ajouter")
+public String ajouterEtablissement(@Valid @ModelAttribute("etablissementRequest") EtablissementAnterieurRequestDTO request,
+                                   BindingResult result,
+                                   RedirectAttributes redirectAttributes) {
+    if (result.hasErrors()) {
+        return "etudiant/etablissements/ajouter";
     }
+    try {
+        UUID etudiantId = getCurrentEtudiantId();
+        etudiantMetier.ajouterEtablissementAnterieur(etudiantId, request);
+        redirectAttributes.addFlashAttribute("success", "Établissement ajouté avec succès.");
+    } catch (BusinessException e) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", "Erreur technique : " + e.getMessage());
+    }
+    return "redirect:/etudiant/profil/view";
+}
 
     @GetMapping("/historique")
     public String historique(Model model) {
@@ -94,13 +115,22 @@ public String showAjouterEtablissementForm(Model model) {
         model.addAttribute("etudiant", etudiantMetier.consulterHistorique(etudiantId)); // ← ajout
         return "etudiant/sanctions";
     }
-    @GetMapping("/profil/view")
-    public String viewProfil(Model model) {
-        UUID etudiantId = getCurrentEtudiantId();
-        EtudiantResponseDTO etudiant = etudiantMetier.consulterHistorique(etudiantId);
-        model.addAttribute("etudiant", etudiant);
-        return "etudiant/profil/view";
-    }
+//    @GetMapping("/profil/view")
+//    public String viewProfil(Model model) {
+//        UUID etudiantId = getCurrentEtudiantId();
+//        EtudiantResponseDTO etudiant = etudiantMetier.consulterHistorique(etudiantId);
+//        model.addAttribute("etudiant", etudiant);
+//        return "etudiant/profil/view";
+//    }
+@GetMapping("/profil/view")
+public String viewProfil(Model model) {
+    UUID etudiantId = getCurrentEtudiantId();
+    EtudiantResponseDTO etudiant = etudiantMetier.consulterHistorique(etudiantId);
+    List<EtablissementAnterieurResponseDTO> etablissements = etudiantMetier.getEtablissementsAnterieurs(etudiantId);
+    model.addAttribute("etudiant", etudiant);
+    model.addAttribute("etablissements", etablissements);
+    return "etudiant/profil/view";
+}
 
     @GetMapping("/profil/edit")
     public String editProfilForm(Model model) {
@@ -122,6 +152,19 @@ public String showAjouterEtablissementForm(Model model) {
         try {
             etudiantMetier.modifierInformationsPersonnelles(userDetails.getId(), request);
             redirectAttributes.addFlashAttribute("success", "Profil mis à jour.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/etudiant/profil/view";
+    }
+    @PostMapping("/profil/update-parcours")
+    public String updateParcours(@RequestParam(required = false) String parcoursActuel,
+                                 @RequestParam(required = false) String niveau,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            UUID etudiantId = getCurrentEtudiantId();
+            etudiantMetier.mettreAJourParcoursEtNiveau(etudiantId, parcoursActuel, niveau);
+            redirectAttributes.addFlashAttribute("success", "Parcours et niveau mis à jour.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

@@ -53,6 +53,26 @@ public class EtudiantMetierImpl implements IEtudiantMetier {
 
     @Override
     @Transactional
+    public void mettreAJourParcoursEtNiveau(UUID etudiantId, String parcoursActuel, String niveau) throws ResourceNotFoundException {
+        Etudiant etudiant = etudiantRepository.findById(etudiantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Étudiant", etudiantId));
+        if (parcoursActuel != null) etudiant.setParcoursActuel(parcoursActuel);
+        if (niveau != null) etudiant.setNiveau(niveau);
+        etudiantRepository.save(etudiant);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EtablissementAnterieurResponseDTO> getEtablissementsAnterieurs(UUID etudiantId) throws ResourceNotFoundException {
+        if (!etudiantRepository.existsById(etudiantId)) {
+            throw new ResourceNotFoundException("Étudiant", etudiantId);
+        }
+        return etabAnterieurRepository.findByEtudiantId(etudiantId).stream()
+                .map(EtablissementAnterieurMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    @Override
+    @Transactional
     public void creerEtudiantPourUtilisateur(UUID utilisateurId, String numeroEtudiant) throws BusinessException {
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", utilisateurId));
@@ -99,27 +119,62 @@ public class EtudiantMetierImpl implements IEtudiantMetier {
                 .map(SanctionMapper::toDTO)
                 .collect(Collectors.toList());
     }
+//
+//    @Override
+//    public EtablissementAnterieurResponseDTO ajouterEtablissementAnterieur(UUID etudiantId, EtablissementAnterieurRequestDTO request) throws BusinessException {
+//        Etudiant etudiant = etudiantRepository.findById(etudiantId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Étudiant", etudiantId));
+//        EtablissementAnterieur etab = EtablissementAnterieurMapper.toEntity(request, etudiant);
+//        etab = etabAnterieurRepository.save(etab);
+//        return EtablissementAnterieurMapper.toDTO(etab);
+//    }
+@Override
+@Transactional
+public EtablissementAnterieurResponseDTO ajouterEtablissementAnterieur(UUID etudiantId, EtablissementAnterieurRequestDTO request) throws BusinessException {
+    // 1. Vérifier que l'étudiant existe
+    Etudiant etudiant = etudiantRepository.findById(etudiantId)
+            .orElseThrow(() -> new ResourceNotFoundException("Étudiant", etudiantId));
 
-    @Override
-    public EtablissementAnterieurResponseDTO ajouterEtablissementAnterieur(UUID etudiantId, EtablissementAnterieurRequestDTO request) throws BusinessException {
-        Etudiant etudiant = etudiantRepository.findById(etudiantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Étudiant", etudiantId));
-        EtablissementAnterieur etab = EtablissementAnterieurMapper.toEntity(request, etudiant);
-        etab = etabAnterieurRepository.save(etab);
-        return EtablissementAnterieurMapper.toDTO(etab);
+    // 2. Vérifier s'il existe déjà un établissement avec une période chevauchante
+    List<EtablissementAnterieur> existants = etabAnterieurRepository.findByEtudiantId(etudiantId);
+    boolean overlap = existants.stream().anyMatch(e -> {
+        // Si la nouvelle période commence après la fin d'un existant -> pas de chevauchement
+        // On considère qu'il y a chevauchement si les plages se croisent
+        return (request.getAnneeDebut() <= e.getAnneeFin() && request.getAnneeFin() >= e.getAnneeDebut());
+    });
+
+    if (overlap) {
+        throw new BusinessException("La période de cet établissement chevauche une période déjà enregistrée.", "OVERLAPPING_PERIOD");
     }
 
-    @Override
-    public void modifierInformationsPersonnelles(UUID utilisateurId, ProfilRequestDTO profilRequest) throws ResourceNotFoundException {
-        Profil profil = profilRepository.findByUtilisateurId(utilisateurId)
-                .orElseThrow(() -> new ResourceNotFoundException("Profil de l'utilisateur", utilisateurId));
-        profil.setNom(profilRequest.getNom());
-        profil.setPrenom(profilRequest.getPrenom());
-        profil.setEmail(profilRequest.getEmail());
-        profil.setTelephone(profilRequest.getTelephone());
-        profil.setMatriculeNational(profilRequest.getMatriculeNational());
-        profilRepository.save(profil);
-    }
+    // 3. Si tout est ok, on enregistre
+    EtablissementAnterieur etab = EtablissementAnterieurMapper.toEntity(request, etudiant);
+    etab = etabAnterieurRepository.save(etab);
+    return EtablissementAnterieurMapper.toDTO(etab);
+}
+
+//    @Override
+//    public void modifierInformationsPersonnelles(UUID utilisateurId, ProfilRequestDTO profilRequest) throws ResourceNotFoundException {
+//        Profil profil = profilRepository.findByUtilisateurId(utilisateurId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Profil de l'utilisateur", utilisateurId));
+//        profil.setNom(profilRequest.getNom());
+//        profil.setPrenom(profilRequest.getPrenom());
+//        profil.setEmail(profilRequest.getEmail());
+//        profil.setTelephone(profilRequest.getTelephone());
+//        profil.setMatriculeNational(profilRequest.getMatriculeNational());
+//        profilRepository.save(profil);
+//    }
+@Override
+public void modifierInformationsPersonnelles(UUID utilisateurId, ProfilRequestDTO profilRequest) throws ResourceNotFoundException {
+    Profil profil = profilRepository.findByUtilisateurId(utilisateurId)
+            .orElseThrow(() -> new ResourceNotFoundException("Profil", utilisateurId));
+    profil.setNom(profilRequest.getNom());
+    profil.setPrenom(profilRequest.getPrenom());
+    profil.setEmail(profilRequest.getEmail());
+    profil.setTelephone(profilRequest.getTelephone());        // ← important
+    profil.setMatriculeNational(profilRequest.getMatriculeNational()); // ← important
+    profilRepository.save(profil);
+}
 
     // ========== Cas d'utilisation Agent académique ==========
 

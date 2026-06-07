@@ -15,12 +15,20 @@ public class EtudiantMapper {
                 .numeroEtudiant(etudiant.getNumeroEtudiant())
                 .dateInscription(etudiant.getDateInscription())
                 .parcoursActuel(etudiant.getParcoursActuel())
+                // Dans EtudiantMapper.java, dans la méthode toDTO()
+                .photoUrl(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
+                        etudiant.getUtilisateur().getProfil().getPhotoUrl() : null)
+                .coverPhotoUrl(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
+                        etudiant.getUtilisateur().getProfil().getCoverPhotoUrl() : null)
+
                 .niveau(etudiant.getNiveau())
                 .utilisateurId(etudiant.getUtilisateur() != null ? etudiant.getUtilisateur().getId() : null)
                 .nom(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
                         etudiant.getUtilisateur().getProfil().getNom() : null)
-                .matriculeNational(etudiant.getMatriculeNational())
-                .telephone(etudiant.getTelephone())
+                .telephone(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
+                        etudiant.getUtilisateur().getProfil().getTelephone() : null)
+                .matriculeNational(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
+                        etudiant.getUtilisateur().getProfil().getMatriculeNational() : null)
                 .prenom(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
                         etudiant.getUtilisateur().getProfil().getPrenom() : null)
                 .email(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?

@@ -13,6 +13,6 @@ public class DemandeTransfertRequestDTO {
     @NotBlank(message = "Le motif est obligatoire")
     private String motif;
 
-    @NotNull(message = "L'ID de l'étudiant est obligatoire")
+//    @NotNull(message = "L'ID de l'étudiant est obligatoire")
     private UUID etudiantId;
 }

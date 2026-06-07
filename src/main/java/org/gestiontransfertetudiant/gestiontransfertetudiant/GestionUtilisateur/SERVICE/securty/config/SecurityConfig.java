@@ -49,18 +49,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Ressources publiques
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/forgot-password", "/auth/reset-password",
+                        .requestMatchers("/auth/login", "/auth/register","/uploads/**" ,"/auth/forgot-password", "/auth/reset-password",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         // Administration centrale
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         // Agents académiques
                         .requestMatchers("/agent/**").hasAnyRole("AGENT", "ADMIN")
                         // Commission pédagogique
                         .requestMatchers("/commission/**").hasAnyRole("COMMISSION", "ADMIN")
                         // Universités (origine et accueil)
                         .requestMatchers("/university/**").hasAnyRole("UNIV_A", "UNIV_B", "ADMIN")
+                        .requestMatchers("/uploads/**").permitAll()
                         // Étudiants
-                        .requestMatchers("/etudiant/**", "/profile/**", "/sessions/**").authenticated()
+                        .requestMatchers("/etudiant/**", "/utilisateur/photo/**","/profile/**", "/etudiant/transferts/**","/sessions/**").authenticated()
                         // Dashboard accessible à tout utilisateur authentifié
                         .requestMatchers("/dashboard/**").authenticated()
                         // Toute autre requête nécessite authentification
