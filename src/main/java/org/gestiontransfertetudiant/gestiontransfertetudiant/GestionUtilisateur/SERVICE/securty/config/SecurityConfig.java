@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Ressources publiques
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/forgot-password",
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/forgot-password", "/auth/reset-password",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         // Administration centrale
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -60,7 +60,7 @@ public class SecurityConfig {
                         // Universités (origine et accueil)
                         .requestMatchers("/university/**").hasAnyRole("UNIV_A", "UNIV_B", "ADMIN")
                         // Étudiants
-                        .requestMatchers("/student/**", "/profile/**", "/sessions/**").authenticated()
+                        .requestMatchers("/etudiant/**", "/profile/**", "/sessions/**").authenticated()
                         // Dashboard accessible à tout utilisateur authentifié
                         .requestMatchers("/dashboard/**").authenticated()
                         // Toute autre requête nécessite authentification

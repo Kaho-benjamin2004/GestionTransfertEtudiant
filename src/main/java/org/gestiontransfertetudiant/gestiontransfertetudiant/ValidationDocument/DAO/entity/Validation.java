@@ -17,6 +17,7 @@ public class Validation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private UUID entiteId;
+
     private String entiteType;
     private Integer etape;
     private String statut; // EN_ATTENTE, VALIDEE, REJETEE, SUSPENDUE

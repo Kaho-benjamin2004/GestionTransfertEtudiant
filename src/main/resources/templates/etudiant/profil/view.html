@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Mon historique - Université de l Excellence')}"></head>
+<head th:replace="fragments/head :: head('Mon historique - Université de l Excellence')"></head>
+<!--<head th:replace="~{fragments/head :: head('Mon profil - Université de l\'Excellence')}"></head>-->
 <body class="bg-campus-blur min-h-screen">
 <div class="flex h-screen overflow-hidden">
-    <!-- Sidebar identique à la page de profil -->
+<!--    <div th:replace="fragments/sidebar :: sidebar"></div>-->
+    <!-- Sidebar étudiant (identique aux autres pages étudiantes) -->
     <aside class="w-72 bg-univ-navy text-white flex flex-col justify-between shadow-2xl z-30 flex-shrink-0 border-r border-univ-gold/20">
         <div>
             <div class="p-6 border-b border-white/10 flex flex-col items-center">
@@ -26,21 +28,22 @@
             </div>
             <nav class="mt-6 px-4 space-y-1">
                 <a th:href="@{/dashboard}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-chart-pie w-5"></i><span>Tableau de bord</span></a>
-                <a th:href="@{/etudiant/historique}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-history w-5"></i><span>Mon historique</span></a>
+                <a th:href="@{/etudiant/historique}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-history w-5"></i><span>Mon historique</span></a>
                 <a th:href="@{/etudiant/credits}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-graduation-cap w-5"></i><span>Mes crédits</span></a>
                 <a th:href="@{/etudiant/sanctions}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-exclamation-triangle w-5"></i><span>Mes sanctions</span></a>
-                <a th:href="@{/etudiant/profil/view}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
+                <a th:href="@{/etudiant/profil/view}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
             </nav>
         </div>
         <div class="p-4 border-t border-white/10"><a th:href="@{/auth/logout}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-rose-300 hover:bg-rose-500/10 transition"><i class="fa-solid fa-power-off w-5"></i><span>Déconnexion</span></a></div>
     </aside>
 
+    <!-- Main content -->
     <div class="flex-grow flex flex-col overflow-hidden">
         <header class="h-20 bg-white/80 backdrop-blur-sm border-b border-slate-200 flex items-center justify-between px-8 z-20 shadow-sm">
             <div class="flex items-center space-x-2">
-                <h1 class="text-2xl font-bold text-univ-navy">Mon historique académique</h1>
+                <h1 class="text-2xl font-bold text-univ-navy">Mon profil</h1>
                 <span class="text-slate-400">/</span>
-                <span class="text-slate-500 font-medium text-sm">Parcours et notes</span>
+                <span class="text-slate-500 font-medium text-sm">Informations personnelles</span>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden sm:block">
@@ -52,37 +55,21 @@
         </header>
 
         <main class="flex-grow p-8 overflow-y-auto custom-scrollbar">
-            <div class="content-card p-6">
-                <h2 class="text-xl font-bold text-univ-navy mb-4">Historique académique</h2>
-
-                <div th:if="${etudiant.parcoursAcademiques == null or etudiant.parcoursAcademiques.empty}" class="bg-blue-50 text-blue-600 p-4 rounded-lg">
-                    Aucun parcours enregistré pour le moment.
+            <div class="content-card p-6 max-w-2xl mx-auto">
+                <div class="space-y-3">
+                    <p><strong>Nom :</strong> <span th:text="${etudiant.nom}">-</span></p>
+                    <p><strong>Prénom :</strong> <span th:text="${etudiant.prenom}">-</span></p>
+                    <p><strong>Email :</strong> <span th:text="${etudiant.email}">-</span></p>
+                    <p><strong>Téléphone :</strong> <span th:text="${etudiant.telephone}">-</span></p>
+                    <p><strong>Matricule national :</strong> <span th:text="${etudiant.matriculeNational}">-</span></p>
+                    <p><strong>Numéro étudiant :</strong> <span th:text="${etudiant.numeroEtudiant}">-</span></p>
+                    <!-- Date d'inscription affichée sans formatage personnalisé pour éviter les erreurs de type -->
+                    <p><strong>Date d'inscription :</strong> <span th:text="${etudiant.dateInscription}">-</span></p>
+                    <p><strong>Parcours actuel :</strong> <span th:text="${etudiant.parcoursActuel}">-</span></p>
+                    <p><strong>Niveau :</strong> <span th:text="${etudiant.niveau}">-</span></p>
                 </div>
-
-                <div th:each="parcours : ${etudiant.parcoursAcademiques}" class="mb-6">
-                    <div class="bg-univ-navy/10 p-4 rounded-xl mb-2">
-                        <h3 class="text-lg font-bold text-univ-navy">Année universitaire : <span th:text="${parcours.anneeUniversitaire}"></span></h3>
-                        <p class="mt-1">Moyenne : <strong><span th:text="${parcours.moyenne}"></span> /20</strong> | Statut : <span th:text="${parcours.statut}"></span></p>
-                    </div>
-                    <table class="min-w-full border border-slate-200 rounded-xl">
-                        <thead class="bg-univ-navy text-white">
-                        <tr>
-                            <th class="p-3 text-left">Unité d'enseignement</th>
-                            <th class="p-3 text-left">Note</th>
-                            <th class="p-3 text-left">Crédits ECTS</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="note : ${parcours.notes}" class="border-b border-slate-100 hover:bg-slate-50 transition">
-                            <td class="p-3" th:text="${note.uniteEnseignement.intitule}">-</td>
-                            <td class="p-3" th:text="${note.valeur}">-</td>
-                            <td class="p-3" th:text="${note.uniteEnseignement.credits}">-</td>
-                        </tr>
-                        <tr th:if="${parcours.notes == null or parcours.notes.empty}">
-                            <td colspan="3" class="p-3 text-center text-slate-400">Aucune note pour cette année</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="mt-6 flex justify-end">
+                    <a th:href="@{/etudiant/profil/edit}" class="bg-univ-gold text-univ-navy px-4 py-2 rounded-xl hover:bg-univ-goldLight transition">Modifier mon profil</a>
                 </div>
             </div>
         </main>

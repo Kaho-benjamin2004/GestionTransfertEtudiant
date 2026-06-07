@@ -2,6 +2,8 @@ package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.SERVICE.IEtudiantMetier;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.mapper.RoleMapper;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.mapper.UtilisateurMapper;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.request.ProfilRequestDTO;
@@ -17,6 +19,7 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.repository.UtilisateurRoleRepository;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.AlreadyExistsException;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.ResourceNotFoundException;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,8 +33,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UtilisateurService {
     private  final  AuthService authService;
+    @Lazy
+    private final IEtudiantMetier etudiantMetier;
     private final UtilisateurRepository utilisateurRepository;
     private final ProfilRepository profilRepository;
     private final RoleRepository roleRepository;
@@ -71,12 +77,37 @@ public class UtilisateurService {
             throw new AlreadyExistsException("Email déjà utilisé");
         }
 
+
         // Création de l'utilisateur
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setLogin(request.getLogin());
         utilisateur.setMotDePasseHash(passwordEncoder.encode(request.getMotDePasse()));
         utilisateur.setActif(request.getActif() != null ? request.getActif() : true);
         utilisateur = utilisateurRepository.save(utilisateur);
+        boolean isEtudiant = false;
+        if (request.getRoleIds() != null && !request.getRoleIds().isEmpty()) {
+            for (UUID roleId : request.getRoleIds()) {
+                utilisateurRoleService.assignRoleToUser(utilisateur.getId(), roleId);
+                Role role = roleRepository.findById(roleId).orElse(null);
+                if (role != null && "ETUDIANT".equals(role.getNom())) {
+                    isEtudiant = true;
+                }
+            }
+        }else {
+            // Rôle par défaut
+            Role etudiantRole = roleRepository.findByNom("ETUDIANT")
+                    .orElseThrow(() -> new ResourceNotFoundException("Rôle ETUDIANT non trouvé"));
+            utilisateurRoleService.assignRoleToUser(utilisateur.getId(), etudiantRole.getId());
+            isEtudiant = true;
+        }
+        if (isEtudiant) {
+            try {
+                etudiantMetier.creerEtudiantPourUtilisateur(utilisateur.getId(), null);
+                log.info("Étudiant créé pour l'utilisateur {}", utilisateur.getLogin());
+            } catch (Exception e) {
+                log.warn("Création étudiant échouée : {}", e.getMessage());
+            }
+        }
 
         // Création du profil
         Profil profil = new Profil();

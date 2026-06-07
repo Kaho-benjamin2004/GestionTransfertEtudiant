@@ -39,7 +39,8 @@ public class DataInitializer implements CommandLineRunner {
         Utilisateur adminUser = utilisateurRepository.findByLogin("admin").orElseGet(() -> {
             Utilisateur user = new Utilisateur();
             user.setLogin("admin");
-            user.setMotDePasseHash(passwordEncoder.encode("admin"));
+            user.setEmail("irbenjamin2004@gmail.com");
+            user.setMotDePasseHash(passwordEncoder.encode("1@2benjamin"));
             user.setActif(true);
             return utilisateurRepository.save(user);
         });

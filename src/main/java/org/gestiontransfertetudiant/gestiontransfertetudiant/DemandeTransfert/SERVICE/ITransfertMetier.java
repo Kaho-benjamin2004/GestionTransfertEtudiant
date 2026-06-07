@@ -45,4 +45,5 @@ public interface ITransfertMetier {
     // ========== Administration centrale ==========
     void detecterDoublons(String numeroEtudiant) throws BusinessException;
     Page<DemandeTransfertResponseDTO> auditerTransferts(Pageable pageable);
+    long getDemandesActivesByEtudiant(UUID etudiantId) throws ResourceNotFoundException;
 }

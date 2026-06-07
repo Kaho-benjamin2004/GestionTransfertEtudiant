@@ -19,6 +19,8 @@ public class EtudiantMapper {
                 .utilisateurId(etudiant.getUtilisateur() != null ? etudiant.getUtilisateur().getId() : null)
                 .nom(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
                         etudiant.getUtilisateur().getProfil().getNom() : null)
+                .matriculeNational(etudiant.getMatriculeNational())
+                .telephone(etudiant.getTelephone())
                 .prenom(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?
                         etudiant.getUtilisateur().getProfil().getPrenom() : null)
                 .email(etudiant.getUtilisateur() != null && etudiant.getUtilisateur().getProfil() != null ?

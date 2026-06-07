@@ -14,7 +14,9 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionEtudiant.DAO.repository.*;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.dto.request.ProfilRequestDTO;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Profil;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Utilisateur;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.repository.ProfilRepository;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.repository.UtilisateurRepository;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.BusinessException;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.SERVICE.execption.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,6 +42,7 @@ public class EtudiantMetierImpl implements IEtudiantMetier {
     private final ParcoursAcademiqueRepository parcoursRepository;
     private final UniteEnseignementRepository ueRepository;
     private final NoteRepository noteRepository;
+    private  final UtilisateurRepository utilisateurRepository;
     private final CreditRepository creditRepository;
     private final SanctionRepository sanctionRepository;
     private final EtablissementAnterieurRepository etabAnterieurRepository;
@@ -44,6 +50,24 @@ public class EtudiantMetierImpl implements IEtudiantMetier {
     private final CalculMoyenneStrategy calculMoyenneStrategy;
 
     // ========== Cas d'utilisation Étudiant ==========
+
+    @Override
+    @Transactional
+    public void creerEtudiantPourUtilisateur(UUID utilisateurId, String numeroEtudiant) throws BusinessException {
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", utilisateurId));
+        if (etudiantRepository.findByUtilisateurId(utilisateurId).isPresent()) {
+            throw new BusinessException("Un étudiant est déjà associé à cet utilisateur", "DUPLICATE");
+        }
+        Etudiant etudiant = new Etudiant();
+        etudiant.setUtilisateur(utilisateur);
+        etudiant.setNumeroEtudiant(numeroEtudiant != null ? numeroEtudiant : "ETU" + System.currentTimeMillis());
+        etudiant.setDateInscription(LocalDate.now());
+        etudiant.setParcoursActuel("Non renseigné");
+        etudiant.setNiveau("Non renseigné");
+        etudiant = etudiantRepository.save(etudiant);
+        EtudiantMapper.toDTO(etudiant);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -127,12 +151,12 @@ public class EtudiantMetierImpl implements IEtudiantMetier {
     }
 
     @Override
-    public SanctionResponseDTO ajouterSanction(SanctionRequestDTO request) throws ResourceNotFoundException, BusinessException {
+    public void ajouterSanction(SanctionRequestDTO request) throws ResourceNotFoundException, BusinessException {
         Etudiant etudiant = etudiantRepository.findById(request.getEtudiantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Étudiant", request.getEtudiantId()));
         Sanction sanction = SanctionMapper.toEntity(request, etudiant);
         sanction = sanctionRepository.save(sanction);
-        return SanctionMapper.toDTO(sanction);
+        SanctionMapper.toDTO(sanction);
     }
 
     @Override
@@ -246,5 +270,24 @@ public class EtudiantMetierImpl implements IEtudiantMetier {
         Etudiant etudiant = etudiantRepository.findByUtilisateurId(utilisateurId)
                 .orElseThrow(() -> new ResourceNotFoundException("Aucun étudiant associé à cet utilisateur", utilisateurId));
         return etudiant.getId();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BigDecimal> getMoyennesParSemestre(UUID etudiantId) throws ResourceNotFoundException {
+        if (!etudiantRepository.existsById(etudiantId)) {
+            throw new ResourceNotFoundException("Étudiant", etudiantId);
+        }
+        // Récupérer les parcours de l'étudiant
+        List<ParcoursAcademique> parcoursList = Collections.singletonList(parcoursRepository.findFirstByEtudiantIdOrderByAnneeUniversitaireDesc(etudiantId).orElseThrow(() ->
+                new RuntimeException("Pas de parcours academique disponible")));
+        // Trier par année (ex: "2024-2025" -> on prend les 4 premiers caractères)
+        parcoursList.sort(Comparator.comparing(p -> {
+            String annee = p.getAnneeUniversitaire();
+            return annee != null && annee.length() >= 4 ? annee.substring(0, 4) : "";
+        }));
+        return parcoursList.stream()
+                .map(p -> p.getMoyenne() != null ? p.getMoyenne() : BigDecimal.ZERO)
+                .collect(Collectors.toList());
     }
 }

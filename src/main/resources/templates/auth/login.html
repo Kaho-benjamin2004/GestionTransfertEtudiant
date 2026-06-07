@@ -72,6 +72,7 @@
         </div>
 
         <!-- Messages d'erreur ou de succès -->
+        <div th:if="${param.success}" class="bg-green-100 text-green-700 p-3 rounded-lg text-sm" th:utext="${param.success[0]}"></div>
         <div th:if="${param.error}" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm">Login ou mot de passe incorrect</div>
         <div th:if="${param.logout}" class="bg-green-100 text-green-700 p-3 rounded-lg text-sm">Vous êtes déconnecté.</div>
 

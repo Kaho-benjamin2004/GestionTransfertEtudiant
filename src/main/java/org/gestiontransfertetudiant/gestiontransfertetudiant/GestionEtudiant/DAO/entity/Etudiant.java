@@ -20,6 +20,8 @@ public class Etudiant {
     @Column(unique = true, nullable = false)
     private String numeroEtudiant;
     private LocalDate dateInscription;
+    private String matriculeNational;
+    private String telephone;
     private String parcoursActuel;
     private String niveau;
     @OneToOne(fetch = FetchType.LAZY)

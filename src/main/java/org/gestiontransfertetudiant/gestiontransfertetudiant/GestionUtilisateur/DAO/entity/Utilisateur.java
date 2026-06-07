@@ -30,6 +30,7 @@ public class Utilisateur {
     private String motDePasseHash;
 
     private String sel;
+    private String email;
 
     @CreationTimestamp
     private LocalDateTime dateCreation;

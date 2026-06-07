@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Mon historique - Université de l Excellence')}"></head>
+<head th:replace="~{fragments/head :: head('Mon Credits - Université de l Excellence')}"></head>
 <body class="bg-campus-blur min-h-screen">
 <div class="flex h-screen overflow-hidden">
-    <!-- Sidebar identique à la page de profil -->
+    <!-- Sidebar étudiant -->
     <aside class="w-72 bg-univ-navy text-white flex flex-col justify-between shadow-2xl z-30 flex-shrink-0 border-r border-univ-gold/20">
         <div>
             <div class="p-6 border-b border-white/10 flex flex-col items-center">
                 <div class="flex items-center space-x-3">
-                    <svg class="w-10 h-10 text-univ-gold" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-10 h-10 text-univ-gold" viewBox="0 0 100 100" fill="none">
                         <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>
                         <path d="M25 65 C20 50,25 35,35 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
                         <path d="M75 65 C80 50,75 35,65 25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
@@ -26,8 +26,8 @@
             </div>
             <nav class="mt-6 px-4 space-y-1">
                 <a th:href="@{/dashboard}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-chart-pie w-5"></i><span>Tableau de bord</span></a>
-                <a th:href="@{/etudiant/historique}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-history w-5"></i><span>Mon historique</span></a>
-                <a th:href="@{/etudiant/credits}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-graduation-cap w-5"></i><span>Mes crédits</span></a>
+                <a th:href="@{/etudiant/historique}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-history w-5"></i><span>Mon historique</span></a>
+                <a th:href="@{/etudiant/credits}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-graduation-cap w-5"></i><span>Mes crédits</span></a>
                 <a th:href="@{/etudiant/sanctions}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-exclamation-triangle w-5"></i><span>Mes sanctions</span></a>
                 <a th:href="@{/etudiant/profil/view}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
             </nav>
@@ -35,12 +35,13 @@
         <div class="p-4 border-t border-white/10"><a th:href="@{/auth/logout}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-rose-300 hover:bg-rose-500/10 transition"><i class="fa-solid fa-power-off w-5"></i><span>Déconnexion</span></a></div>
     </aside>
 
+    <!-- Main content -->
     <div class="flex-grow flex flex-col overflow-hidden">
         <header class="h-20 bg-white/80 backdrop-blur-sm border-b border-slate-200 flex items-center justify-between px-8 z-20 shadow-sm">
             <div class="flex items-center space-x-2">
-                <h1 class="text-2xl font-bold text-univ-navy">Mon historique académique</h1>
+                <h1 class="text-2xl font-bold text-univ-navy">Mes crédits ECTS</h1>
                 <span class="text-slate-400">/</span>
-                <span class="text-slate-500 font-medium text-sm">Parcours et notes</span>
+                <span class="text-slate-500 font-medium text-sm">Crédits acquis</span>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden sm:block">
@@ -53,36 +54,45 @@
 
         <main class="flex-grow p-8 overflow-y-auto custom-scrollbar">
             <div class="content-card p-6">
-                <h2 class="text-xl font-bold text-univ-navy mb-4">Historique académique</h2>
+                <h2 class="text-xl font-bold text-univ-navy mb-4">Crédits ECTS acquis</h2>
 
-                <div th:if="${etudiant.parcoursAcademiques == null or etudiant.parcoursAcademiques.empty}" class="bg-blue-50 text-blue-600 p-4 rounded-lg">
-                    Aucun parcours enregistré pour le moment.
+                <!-- Message si aucun crédit -->
+                <div th:if="${credits == null or credits.empty}" class="bg-blue-50 text-blue-600 p-4 rounded-lg">
+                    Aucun crédit enregistré pour le moment.
                 </div>
 
-                <div th:each="parcours : ${etudiant.parcoursAcademiques}" class="mb-6">
-                    <div class="bg-univ-navy/10 p-4 rounded-xl mb-2">
-                        <h3 class="text-lg font-bold text-univ-navy">Année universitaire : <span th:text="${parcours.anneeUniversitaire}"></span></h3>
-                        <p class="mt-1">Moyenne : <strong><span th:text="${parcours.moyenne}"></span> /20</strong> | Statut : <span th:text="${parcours.statut}"></span></p>
-                    </div>
+                <!-- Tableau des crédits -->
+                <div th:unless="${credits == null or credits.empty}" class="overflow-x-auto">
                     <table class="min-w-full border border-slate-200 rounded-xl">
                         <thead class="bg-univ-navy text-white">
                         <tr>
-                            <th class="p-3 text-left">Unité d'enseignement</th>
-                            <th class="p-3 text-left">Note</th>
-                            <th class="p-3 text-left">Crédits ECTS</th>
+                            <th class="p-3 text-left">Année universitaire</th>
+                            <th class="p-3 text-left">Crédits obtenus</th>
+                            <th class="p-3 text-left">Statut</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="note : ${parcours.notes}" class="border-b border-slate-100 hover:bg-slate-50 transition">
-                            <td class="p-3" th:text="${note.uniteEnseignement.intitule}">-</td>
-                            <td class="p-3" th:text="${note.valeur}">-</td>
-                            <td class="p-3" th:text="${note.uniteEnseignement.credits}">-</td>
-                        </tr>
-                        <tr th:if="${parcours.notes == null or parcours.notes.empty}">
-                            <td colspan="3" class="p-3 text-center text-slate-400">Aucune note pour cette année</td>
+                        <tr th:each="c : ${credits}" class="border-b border-slate-100 hover:bg-slate-50 transition">
+                            <td class="p-3" th:text="${c.annee}">-</td>
+                            <td class="p-3 font-bold text-univ-navy" th:text="${c.nombre}">0</td>
+                            <td class="p-3">
+                                <span th:if="${c.statut == 'Acquis'}" class="text-green-600"><i class="fas fa-check-circle"></i> Acquis</span>
+                                <span th:if="${c.statut == 'Non acquis'}" class="text-red-600"><i class="fas fa-times-circle"></i> Non acquis</span>
+                                <span th:if="${c.statut == 'En cours'}" class="text-yellow-600"><i class="fas fa-hourglass-half"></i> En cours</span>
+                                <span th:unless="${c.statut == 'Acquis' or c.statut == 'Non acquis' or c.statut == 'En cours'}" th:text="${c.statut}">-</span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Résumé : total des crédits acquis -->
+                <div th:unless="${credits == null or credits.empty}" class="mt-6 p-4 bg-univ-navy/10 rounded-xl">
+                    <p class="text-lg font-bold text-univ-navy">
+                        Total des crédits acquis :
+                        <span th:text="${#aggregates.sum(credits.![nombre])}">0</span> / 180
+                    </p>
+                    <p class="text-sm text-slate-600">*Basé sur les crédits ayant le statut "Acquis".</p>
                 </div>
             </div>
         </main>

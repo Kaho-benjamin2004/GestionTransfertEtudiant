@@ -17,10 +17,7 @@ import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.
 import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.entity.HistoriqueValidation;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.entity.Validation;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.entity.Workflow;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.repository.EtapeValidationRepository;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.repository.HistoriqueValidationRepository;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.repository.ValidationRepository;
-import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.repository.WorkflowRepository;
+import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.DAO.repository.*;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.ValidationDocument.SERVICE.IValidationMetier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +33,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class ValidationMetierImpl implements IValidationMetier {
 
-    private final WorkflowRepository workflowRepository;
+    private final ValidationWorkflowRepository workflowRepository;
     private final EtapeValidationRepository etapeRepository;
     private final ValidationRepository validationRepository;
     private final HistoriqueValidationRepository historiqueRepository;
@@ -55,7 +52,7 @@ public class ValidationMetierImpl implements IValidationMetier {
             throw new BusinessException("Une validation est déjà en cours pour cette entité", "VALIDATION_EN_COURS");
         }
         Workflow workflow = workflowRepository.findById(request.getWorkflowId())
-                .orElseThrow(() -> new ResourceNotFoundException("Workflow", request.getWorkflowId()));
+                .orElseThrow();
         Validation validation = ValidationMapper.toEntity(request, workflow);
         validation = validationRepository.save(validation);
         // Ajout historique
@@ -147,7 +144,7 @@ public class ValidationMetierImpl implements IValidationMetier {
         }
         Workflow workflow = WorkflowMapper.toEntity(request);
         workflow = workflowRepository.save(workflow);
-        // Sauvegarder les étapes
+        // Sauvegarder les tapes
         for (var etapeReq : request.getEtapes()) {
             EtapeValidation etape = EtapeValidationMapper.toEntity(etapeReq, workflow);
             etapeRepository.save(etape);

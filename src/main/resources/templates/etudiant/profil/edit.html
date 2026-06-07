@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/head :: head('Mon historique - Université de l Excellence')}"></head>
 <body class="bg-campus-blur min-h-screen">
 <div class="flex h-screen overflow-hidden">
-    <!-- Sidebar identique à la page de profil -->
+    <!-- Sidebar identique -->
     <aside class="w-72 bg-univ-navy text-white flex flex-col justify-between shadow-2xl z-30 flex-shrink-0 border-r border-univ-gold/20">
         <div>
             <div class="p-6 border-b border-white/10 flex flex-col items-center">
@@ -26,10 +26,10 @@
             </div>
             <nav class="mt-6 px-4 space-y-1">
                 <a th:href="@{/dashboard}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-chart-pie w-5"></i><span>Tableau de bord</span></a>
-                <a th:href="@{/etudiant/historique}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-history w-5"></i><span>Mon historique</span></a>
+                <a th:href="@{/etudiant/historique}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-history w-5"></i><span>Mon historique</span></a>
                 <a th:href="@{/etudiant/credits}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-graduation-cap w-5"></i><span>Mes crédits</span></a>
                 <a th:href="@{/etudiant/sanctions}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-exclamation-triangle w-5"></i><span>Mes sanctions</span></a>
-                <a th:href="@{/etudiant/profil/view}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-white/5 transition"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
+                <a th:href="@{/etudiant/profil/view}" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-univ-gold text-univ-navy font-semibold shadow-md"><i class="fa-solid fa-user-circle w-5"></i><span>Mon profil</span></a>
             </nav>
         </div>
         <div class="p-4 border-t border-white/10"><a th:href="@{/auth/logout}" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-rose-300 hover:bg-rose-500/10 transition"><i class="fa-solid fa-power-off w-5"></i><span>Déconnexion</span></a></div>
@@ -38,52 +38,35 @@
     <div class="flex-grow flex flex-col overflow-hidden">
         <header class="h-20 bg-white/80 backdrop-blur-sm border-b border-slate-200 flex items-center justify-between px-8 z-20 shadow-sm">
             <div class="flex items-center space-x-2">
-                <h1 class="text-2xl font-bold text-univ-navy">Mon historique académique</h1>
+                <h1 class="text-2xl font-bold text-univ-navy">Modifier mon profil</h1>
                 <span class="text-slate-400">/</span>
-                <span class="text-slate-500 font-medium text-sm">Parcours et notes</span>
+                <span class="text-slate-500 font-medium text-sm">Formulaire d'édition</span>
             </div>
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden sm:block">
                     <span class="block text-sm font-bold text-univ-navy" th:text="${etudiant != null ? etudiant.nom + ' ' + etudiant.prenom : 'Étudiant'}">Étudiant</span>
-                    <span class="block text-[11px] text-slate-500 font-medium">N° <span th:text="${etudiant != null ? etudiant.numeroEtudiant : ''}">123456</span></span>
                 </div>
                 <img class="w-10 h-10 rounded-full border-2 border-univ-gold object-cover shadow-sm" src="https://ui-avatars.com/api/?background=133054&color=bfa15f&bold=true&name=Student" alt="Avatar">
             </div>
         </header>
 
         <main class="flex-grow p-8 overflow-y-auto custom-scrollbar">
-            <div class="content-card p-6">
-                <h2 class="text-xl font-bold text-univ-navy mb-4">Historique académique</h2>
-
-                <div th:if="${etudiant.parcoursAcademiques == null or etudiant.parcoursAcademiques.empty}" class="bg-blue-50 text-blue-600 p-4 rounded-lg">
-                    Aucun parcours enregistré pour le moment.
-                </div>
-
-                <div th:each="parcours : ${etudiant.parcoursAcademiques}" class="mb-6">
-                    <div class="bg-univ-navy/10 p-4 rounded-xl mb-2">
-                        <h3 class="text-lg font-bold text-univ-navy">Année universitaire : <span th:text="${parcours.anneeUniversitaire}"></span></h3>
-                        <p class="mt-1">Moyenne : <strong><span th:text="${parcours.moyenne}"></span> /20</strong> | Statut : <span th:text="${parcours.statut}"></span></p>
+            <div class="content-card p-6 max-w-2xl mx-auto">
+                <h2 class="text-xl font-bold text-univ-navy mb-4">Modifier mes informations</h2>
+                <form th:action="@{/etudiant/profil/edit}" th:object="${profilRequest}" method="post" class="space-y-4">
+                    <div th:if="${#fields.hasErrors('*')}" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm">
+                        <ul><li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li></ul>
                     </div>
-                    <table class="min-w-full border border-slate-200 rounded-xl">
-                        <thead class="bg-univ-navy text-white">
-                        <tr>
-                            <th class="p-3 text-left">Unité d'enseignement</th>
-                            <th class="p-3 text-left">Note</th>
-                            <th class="p-3 text-left">Crédits ECTS</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="note : ${parcours.notes}" class="border-b border-slate-100 hover:bg-slate-50 transition">
-                            <td class="p-3" th:text="${note.uniteEnseignement.intitule}">-</td>
-                            <td class="p-3" th:text="${note.valeur}">-</td>
-                            <td class="p-3" th:text="${note.uniteEnseignement.credits}">-</td>
-                        </tr>
-                        <tr th:if="${parcours.notes == null or parcours.notes.empty}">
-                            <td colspan="3" class="p-3 text-center text-slate-400">Aucune note pour cette année</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <div><label class="block text-xs font-bold text-slate-600 uppercase">Nom *</label><input type="text" th:field="*{nom}" required class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"></div>
+                    <div><label class="block text-xs font-bold text-slate-600 uppercase">Prénom *</label><input type="text" th:field="*{prenom}" required class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"></div>
+                    <div><label class="block text-xs font-bold text-slate-600 uppercase">Email *</label><input type="email" th:field="*{email}" required class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"></div>
+                    <div><label class="block text-xs font-bold text-slate-600 uppercase">Téléphone</label><input type="tel" th:field="*{telephone}" class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"></div>
+                    <div><label class="block text-xs font-bold text-slate-600 uppercase">Matricule national</label><input type="text" th:field="*{matriculeNational}" class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white/80"></div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <a th:href="@{/etudiant/profil/view}" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl">Annuler</a>
+                        <button type="submit" class="bg-univ-gold text-univ-navy font-bold px-6 py-2 rounded-xl shadow hover:bg-univ-goldLight transition">Enregistrer</button>
+                    </div>
+                </form>
             </div>
         </main>
     </div>

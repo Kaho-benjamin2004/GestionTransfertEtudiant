@@ -48,7 +48,7 @@ public class AuthService {
     public AuthResponseDTO login(LoginRequestDTO request, HttpServletRequest httpRequest) {
         // Vérifier existence et blocage
         Utilisateur utilisateur = utilisateurRepository.findByLogin(request.getUsername())
-                .orElseThrow(() -> new AuthenticationException("Login ou mot de passe incorrect"));
+                .orElseThrow(() -> new AuthenticationException("Nom d'utilisateur ou mot de passe incorrect"));
 
         if (utilisateur.getBloqueJusqua() != null && utilisateur.getBloqueJusqua().isAfter(LocalDateTime.now())) {
             throw new AuthenticationException("Compte bloqué jusqu'au " + utilisateur.getBloqueJusqua());

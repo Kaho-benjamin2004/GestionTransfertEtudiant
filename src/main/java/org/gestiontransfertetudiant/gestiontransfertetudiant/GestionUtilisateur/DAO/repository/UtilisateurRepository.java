@@ -1,12 +1,13 @@
 package org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.repository;
 
-import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Role;
 import org.gestiontransfertetudiant.gestiontransfertetudiant.GestionUtilisateur.DAO.entity.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,4 +36,7 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, UUID> 
     void reinitialiserTentatives(@Param("login") String login);
     @Query("SELECT u FROM Utilisateur u LEFT JOIN FETCH u.utilisateurRoles ur LEFT JOIN FETCH ur.role WHERE u.login = :login")
     Optional<Utilisateur> findByLoginWithRoles(@Param("login") String login);
+
+    Optional<Utilisateur> findByEmail(String email);
+
 }

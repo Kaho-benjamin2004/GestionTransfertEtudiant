@@ -19,6 +19,8 @@ import java.util.UUID;
 
 public interface IEtudiantMetier {
 
+    void creerEtudiantPourUtilisateur(UUID utilisateurId, String numeroEtudiant) throws BusinessException;
+
     // ========== Cas d'utilisation Étudiant ==========
 
     /**
@@ -66,7 +68,7 @@ public interface IEtudiantMetier {
     /**
      * Enregistrer une sanction disciplinaire.
      */
-    SanctionResponseDTO ajouterSanction(SanctionRequestDTO request) throws ResourceNotFoundException, BusinessException;
+    void ajouterSanction(SanctionRequestDTO request) throws ResourceNotFoundException, BusinessException;
 
     /**
      * Générer un relevé de notes officiel (PDF).
@@ -123,4 +125,6 @@ public interface IEtudiantMetier {
      * Récupérer l'identifiant d'un étudiant à partir de son utilisateurId.
      */
     UUID getEtudiantIdByUtilisateurId(UUID utilisateurId) throws ResourceNotFoundException;
+
+    List<BigDecimal> getMoyennesParSemestre(UUID etudiantId);
 }

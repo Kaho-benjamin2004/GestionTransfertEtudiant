@@ -95,6 +95,14 @@ public class TransfertMetierImpl implements ITransfertMetier {
 //        return "Université d'origine (non renseignée)";
 //    }
 @Override
+
+public long getDemandesActivesByEtudiant(UUID etudiantId) throws ResourceNotFoundException {
+    if (!etudiantRepository.existsById(etudiantId)) {
+        throw new ResourceNotFoundException("Étudiant", etudiantId);
+    }
+    return demandeRepository.countByEtudiantIdAndStatutNotIn(etudiantId, List.of("ACCEPTEE", "REFUSEE", "ANNULEE"));
+}
+@Override
 @Transactional(readOnly = true)
 public List<TransfertExportDTO> getTransfertsForExport(LocalDate dateDebut, LocalDate dateFin, String statut) {
     List<DemandeTransfert> demandes;
@@ -327,6 +335,8 @@ public List<TransfertExportDTO> getTransfertsForExport(LocalDate dateDebut, Loca
     public Page<DemandeTransfertResponseDTO> auditerTransferts(Pageable pageable) {
         return demandeRepository.findAll(pageable).map(DemandeTransfertMapper::toDTO);
     }
+
+
 
     // ========== Méthodes privées ==========
     private void ajouterAudit(UUID demandeId, String action, String details, UUID utilisateurId) {

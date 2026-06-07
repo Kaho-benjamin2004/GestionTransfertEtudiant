@@ -14,9 +14,15 @@ import java.util.UUID;
 public interface DemandeTransfertRepository extends JpaRepository<DemandeTransfert, UUID> {
     List<DemandeTransfert> findByEtudiantId(UUID etudiantId);
     List<DemandeTransfert> findByDateDemandeBetween(LocalDate dateDebut, LocalDate dateFin);
-
+    @Query("SELECT COUNT(d) FROM DemandeTransfert d WHERE d.etudiant.id = :etudiantId AND d.statut NOT IN ('ACCEPTEE', 'REFUSEE', 'ANNULEE')")
+    long countByEtudiantIdAndStatutNotIn(@Param("etudiantId") UUID etudiantId);
     long countByStatut(String statut);
     Page<DemandeTransfert> findByStatut(String statut, Pageable pageable);
     @Query("SELECT d FROM DemandeTransfert d WHERE d.etudiant.utilisateur.id = :utilisateurId")
     List<DemandeTransfert> findByUtilisateurId(@Param("utilisateurId") UUID utilisateurId);
+
+
+    @Query("SELECT COUNT(d) FROM DemandeTransfert d WHERE d.etudiant.id = :etudiantId AND d.statut NOT IN :statuts")
+    long countByEtudiantIdAndStatutNotIn(@Param("etudiantId") UUID etudiantId, @Param("statuts") List<String> statuts);
 }
+
